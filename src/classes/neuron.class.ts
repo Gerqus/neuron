@@ -8,6 +8,8 @@ export class Neuron {
     state: number;
 
     constructor(activationFunction: activationFunction) {
+        this.connections = [];
+        this.state = 0;
         this.activationFunction = activationFunction;
     }
 

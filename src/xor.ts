@@ -44,7 +44,7 @@ function netNeurons() {
 
         layer.forEach((currentNeuron) => {
             layers[layerNum - 1].forEach((inputNeuron) => {
-                currentNeuron.connect(inputNeuron, (Math.random() + 1) / 2);
+                currentNeuron.connect(inputNeuron, Math.random());
             });
         });
     });
