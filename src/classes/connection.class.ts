@@ -1,6 +1,6 @@
 import { Neuron } from "./neuron.class";
 
-export class Connection {
+export interface Connection {
     inputNeuron: Neuron;
-    weight?: number;
+    weight: number;
 }
