@@ -1,4 +1,4 @@
 interface dataset {
     inputs: number[];
-    expected: number;
+    expected: number[];
 }

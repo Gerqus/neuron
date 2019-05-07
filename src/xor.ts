@@ -20,19 +20,19 @@ layers[2] = [
 const testData: dataset[] = [
     {
         inputs: [1, 0],
-        expected: 1
+        expected: [1]
     },
     {
         inputs: [0, 1],
-        expected: 1
+        expected: [1]
     },
     {
         inputs: [1, 1],
-        expected: 0
+        expected: [0]
     },
     {
         inputs: [0, 0],
-        expected: 0
+        expected: [0]
     },
 ];
 
@@ -69,5 +69,12 @@ function run() {
     layers[layers.length-1].forEach((neuron, index) => console.log(`Output #${index}: ${neuron.state}`));
 }
 
+function learn() {
+    layers.forEach(layer => {
+        layer.forEach(neuron => neuron.activate());
+    });
+}
+
 netNeurons();
 run();
+learn();
