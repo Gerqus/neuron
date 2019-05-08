@@ -70,8 +70,22 @@ function run() {
 }
 
 function learn() {
-    layers.forEach(layer => {
-        layer.forEach(neuron => neuron.activate());
+    testData.forEach(dataSet => {
+        if (layers[0].length != dataSet.inputs.length) {
+            throw new Error('Input data points count doesn\'t match input neurons count. Terminating...');
+        }
+
+        dataSet.inputs.forEach((value, index) => {
+            layers[0][index].state = value;
+        });
+
+        layers.forEach(layer => {
+            layer.forEach(neuron => neuron.activate());
+        });
+
+        layers.forEach(layer => {
+            layer.forEach(neuron => neuron.activate());
+        });
     });
 }
 
