@@ -1,0 +1,23 @@
+{
+  "name": "neuron",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "codelyzer": "^4.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "tsc -t ES6 -m commonjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gerqus/neuron.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gerqus/neuron/issues"
+  },
+  "homepage": "https://github.com/Gerqus/neuron#readme"
+}

@@ -1,4 +1,4 @@
-import { Connection } from "./connection.class";
+import { Connection } from './connection.class';
 
 type activationFunction = (x: number) => number;
 
@@ -7,10 +7,10 @@ export class Neuron {
     private activationFunction: activationFunction;
     state: number;
 
-    constructor(activationFunction: activationFunction) {
+    constructor(activationFunctionToAssign: activationFunction) {
         this.connections = [];
         this.state = 0;
-        this.activationFunction = activationFunction;
+        this.activationFunction = activationFunctionToAssign;
     }
 
     connect(inputNeuron: Neuron, weight: number = 1): void {
@@ -19,7 +19,7 @@ export class Neuron {
             weight
         });
     }
-    
+
     activate(): void {
         const inputsSum: number = this.connections.reduce(
             (sum, connection): number => sum += connection.inputNeuron.state * connection.weight,

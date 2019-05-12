@@ -1,5 +1,5 @@
-import { Neuron } from "./classes/neuron.class";
-import { bias, sigmoid } from "./libs/activationMethods";
+import { Neuron } from './classes/neuron.class';
+import { bias, sigmoid } from './libs/activationMethods';
 
 const layers: Neuron[][] = [];
 
@@ -52,7 +52,7 @@ function netNeurons() {
 
 function run() {
     testData.forEach(dataSet => {
-        if (layers[0].length != dataSet.inputs.length) {
+        if (layers[0].length !== dataSet.inputs.length) {
             throw new Error('Input data points count doesn\'t match input neurons count. Terminating...');
         }
 
@@ -66,12 +66,12 @@ function run() {
     });
 
     console.log('Output:');
-    layers[layers.length-1].forEach((neuron, index) => console.log(`Output #${index}: ${neuron.state}`));
+    layers[layers.length - 1].forEach((neuron, index) => console.log(`Output #${index}: ${neuron.state}`));
 }
 
 function learn() {
     testData.forEach(dataSet => {
-        if (layers[0].length != dataSet.inputs.length) {
+        if (layers[0].length !== dataSet.inputs.length) {
             throw new Error('Input data points count doesn\'t match input neurons count. Terminating...');
         }
 
