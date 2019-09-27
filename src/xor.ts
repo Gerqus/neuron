@@ -1,21 +1,25 @@
 import { Neuron } from './classes/neuron.class';
 import { bias, sigmoid } from './libs/activationMethods';
+import { Connection } from './classes/connection.class';
+import { Network } from './classes/network.class';
 
-const layers: Neuron[][] = [];
+const networkSchema: Neuron[][] = [];
 
-layers[0] = [
+networkSchema[0] = [
     new Neuron(bias),
     new Neuron(bias),
 ]
 
-layers[1] = [
+networkSchema[1] = [
     new Neuron(sigmoid),
     new Neuron(sigmoid),
 ]
 
-layers[2] = [
+networkSchema[2] = [
     new Neuron(sigmoid),
 ]
+
+const network = new Network(networkSchema)
 
 const testData: dataset[] = [
     {
@@ -36,7 +40,7 @@ const testData: dataset[] = [
     },
 ];
 
-function netNeurons() {
+function interlinkNeurons() {
     layers.forEach((layer, layerNum) => {
         if (layerNum === 0) {
             return;
@@ -51,7 +55,7 @@ function netNeurons() {
 }
 
 function run() {
-    testData.forEach(dataSet => {
+    testData.forEach((dataSet, testIndex) => {
         if (layers[0].length !== dataSet.inputs.length) {
             throw new Error('Input data points count doesn\'t match input neurons count. Terminating...');
         }
@@ -59,14 +63,15 @@ function run() {
         dataSet.inputs.forEach((value, index) => {
             layers[0][index].state = value;
         });
-
-        layers.forEach(layer => {
+    
+        layers.forEach((layer, layerIndex) => {
+            if (layerIndex == 0) return;
             layer.forEach(neuron => neuron.activate());
         });
-    });
 
-    console.log('Output:');
-    layers[layers.length - 1].forEach((neuron, index) => console.log(`Output #${index}: ${neuron.state}`));
+        console.log(`Output for test#${testIndex}:`);
+        layers[layers.length - 1].forEach((neuron, index) => console.log(`Neuron#${index}: ${neuron.state}`));
+    });
 }
 
 function learn() {
@@ -89,6 +94,6 @@ function learn() {
     });
 }
 
-netNeurons();
+interlinkNeurons();
 run();
 learn();

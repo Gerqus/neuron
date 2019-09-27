@@ -3,8 +3,8 @@ import { Connection } from './connection.class';
 type activationFunction = (x: number) => number;
 
 export class Neuron {
-    private connections: Connection[];
-    private activationFunction: activationFunction;
+    public connections: Connection[];
+    activationFunction: activationFunction;
     state: number;
 
     constructor(activationFunctionToAssign: activationFunction) {
@@ -20,11 +20,15 @@ export class Neuron {
         });
     }
 
-    activate(): void {
-        const inputsSum: number = this.connections.reduce(
+    getInputsWeightedSum(): number {
+        return this.connections.reduce(
             (sum, connection): number => sum += connection.inputNeuron.state * connection.weight,
             0
-        );
+        )
+    }
+
+    activate(): void {
+        const inputsSum: number = this.getInputsWeightedSum();
         this.state = this.activationFunction(inputsSum);
     }
 }
