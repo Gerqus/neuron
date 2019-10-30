@@ -40,7 +40,16 @@ const testData: dataset[] = [
     },
 ];
 
-network.setDataToWork(testData);
-network.logLayersStatus("before run");
+network.setDataToWork(testData[0]);
 network.run();
+network.logNetworkOutput("#0");
+network.setDataToWork(testData[1]);
+network.run();
+network.logNetworkOutput("#1");
+network.setDataToWork(testData[2]);
+network.run();
+network.logNetworkOutput("#2");
+network.setDataToWork(testData[3]);
+network.run();
+network.logNetworkOutput("#3");
 network.learn();

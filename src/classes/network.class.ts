@@ -3,7 +3,7 @@ import { Neuron } from "./neuron.class";
 
 export class Network {
     private layers: Layer[] = [];
-    private inputData: dataset[];
+    private inputData: dataset;
 
     constructor(schema: Neuron[][]) {
         if (schema.length < 2) {
@@ -22,29 +22,29 @@ export class Network {
         });
     }
 
-    public setDataToWork(testData: dataset[]): void {
+    public setDataToWork(testData: dataset): void {
+        if(!testData || !testData.inputs || !testData.expected) {
+            throw new Error('Test suite data has wrong format. Terminating...');
+        }
         this.inputData = testData;
     }
     
     public run(): void {
-        this.inputData.forEach((dataSet, testIndex) => {
-            this.setInputLayerValues(dataSet.inputs);
-        
-            this.getWorkingLayers().forEach(layer => {
-                layer.activateNeurons();
-            });
+        this.setInputLayerValues(this.inputData.inputs);
     
-            console.log(`Output for test#${testIndex}:`);
-            this.readOutputLayerValues().forEach(
-                (neuronState, index) => console.log(`Neuron#${index}: ${neuronState}`)
-            );
+        this.getWorkingLayers().forEach(layer => {
+            layer.activateNeurons();
         });
     }
 
-    public learn(): void {
-        this.inputData.forEach(dataSet => {
+    public logNetworkOutput(runLabel?: string):void {
+        console.log(`Output from last run (${runLabel}):`);
+        this.readOutputLayerValues().forEach(
+            (neuronState, index) => console.log(`Neuron#${index}: ${neuronState}`)
+        );
+    }
 
-        });
+    public learn(): void {
     }
 
     private getInputLayer(): Layer {
