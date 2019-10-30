@@ -1,8 +1,10 @@
 import { Layer } from "./layer.class";
 import { Neuron } from "./neuron.class";
+import { Connection } from "./connection.class";
 
 export class Network {
     private layers: Layer[] = [];
+    private connections: Connection[];
     private inputData: dataset;
 
     constructor(schema: Neuron[][]) {
@@ -44,7 +46,22 @@ export class Network {
         );
     }
 
-    public learn(): void {
+    public learn(expectedOutput: dataset): void {
+        this.getOutputLayer().getNeurons().forEach((outputNeuron, neuronIndex) => {
+            outputNeuron.setNeuronError(
+                (expectedOutput[neuronIndex] - outputNeuron.state) * outputNeuron.activationDerivativeCalculation()
+            );
+        });
+        this.logLayersStatus("after output layer error calculation");
+
+        this.getWorkingLayers().reverse().forEach((currentLayer, layerNumber) => {
+            currentLayer.getNeurons().forEach(neuron => {
+                neuron.incomingConnections.forEach(connection => {
+                    connection.neuron.setNeuronError(connection.neuron.getNeuronError() + connection.weight * neuron.getNeuronError());
+                });
+            })
+            this.logLayersStatus(`after layer #${layerNumber}`);
+        });
     }
 
     private getInputLayer(): Layer {
@@ -71,7 +88,7 @@ export class Network {
     }
 
     private readOutputLayerValues(): number[] {
-        return this.getOutputLayer().getNeurons().map(neuron => neuron.state);
+        return this.getOutputLayer().getNeuronsValues();
     }
 
     logLayersStatus(label: string): void {
@@ -79,8 +96,8 @@ export class Network {
         this.layers.forEach((layer, layerIndex) => {
             console.log(`-- Layer ${layerIndex}:`);
             layer.getNeurons().forEach((neuron, neuronIndex) => {
-                const connectionsWeights = neuron.connections.map((conn) => Math.round(conn.weight * 1_000_000) / 1_000_000);
-                console.log(`- Neuron ${neuronIndex} state:${neuron.state} connections:${connectionsWeights.toString()} sum:${neuron.getInputsWeightedSum()} output:${neuron.activationFunction(neuron.getInputsWeightedSum())}`);
+                const connectionsWeights = neuron.incomingConnections.map((conn) => Math.round(conn.weight * 1_000_000) / 1_000_000);
+                console.log(`- Neuron ${neuronIndex} state:${neuron.state} connections:${connectionsWeights.toString()} sum:${neuron.getInputsWeightedSum()} output:${neuron.activationFunction(neuron.getInputsWeightedSum())} error:${neuron.getNeuronError()}`);
             });
         })
     }

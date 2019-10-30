@@ -43,6 +43,7 @@ const testData: testData[] = [
 network.setDataToWork(testData[0].inputs);
 network.run();
 network.logNetworkOutput("#0");
+network.learn(testData[0].expected);
 network.setDataToWork(testData[1].inputs);
 network.run();
 network.logNetworkOutput("#1");
@@ -52,4 +53,3 @@ network.logNetworkOutput("#2");
 network.setDataToWork(testData[3].inputs);
 network.run();
 network.logNetworkOutput("#3");
-network.learn();

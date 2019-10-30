@@ -1,4 +1,5 @@
 import { Neuron } from "./neuron.class";
+import { Connection } from "./connection.class";
 
 export class Layer {
     private neurons: Neuron[];
@@ -14,10 +15,17 @@ export class Layer {
     public interlinkNeurons(inputLayer: Layer): void {
         this.neurons.forEach((currentNeuron) => {
             inputLayer.getNeurons().forEach((inputNeuron) => {
-                currentNeuron.connect(inputNeuron, Math.random());
+                const connectionDraft: ConnectionDefinition = {
+                    neuron: inputNeuron,
+                    weight: Math.random(),
+                };
+                const newConnection = currentNeuron.setIncomingConnection(connectionDraft);
+                inputNeuron.setOutgoingConnection(newConnection);
             });
         });
     }
+
+    public 
 
     public setNeuronsValues(inputNeuronValues: number[]): void {
         if (this.getNeuronsCount() !== inputNeuronValues.length) {
@@ -32,5 +40,13 @@ export class Layer {
 
     public activateNeurons(): void {
         this.neurons.forEach(neuron => neuron.activate());
+    }
+
+    // public getNeuronsErrorSum(): number {
+    //     return this.neurons.reduce((sum, neuron) => sum + neuron.getNeuronError(), 0);
+    // }
+
+    public getNeuronsValues(): number[] {
+        return this.neurons.map(neuron => neuron.state);
     }
 }
