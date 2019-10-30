@@ -21,7 +21,7 @@ networkSchema[2] = [
 const network = new Network(networkSchema);
 network.interlinkNeurons();
 
-const testData: dataset[] = [
+const testData: testData[] = [
     {
         inputs: [1, 0],
         expected: [1]
@@ -40,16 +40,16 @@ const testData: dataset[] = [
     },
 ];
 
-network.setDataToWork(testData[0]);
+network.setDataToWork(testData[0].inputs);
 network.run();
 network.logNetworkOutput("#0");
-network.setDataToWork(testData[1]);
+network.setDataToWork(testData[1].inputs);
 network.run();
 network.logNetworkOutput("#1");
-network.setDataToWork(testData[2]);
+network.setDataToWork(testData[2].inputs);
 network.run();
 network.logNetworkOutput("#2");
-network.setDataToWork(testData[3]);
+network.setDataToWork(testData[3].inputs);
 network.run();
 network.logNetworkOutput("#3");
 network.learn();

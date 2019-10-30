@@ -1,4 +1,5 @@
-interface dataset {
-    inputs: number[];
-    expected: number[];
+type dataset = number[];
+interface testData {
+    inputs: dataset,
+    expected: dataset
 }

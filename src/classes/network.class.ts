@@ -22,15 +22,15 @@ export class Network {
         });
     }
 
-    public setDataToWork(testData: dataset): void {
-        if(!testData || !testData.inputs || !testData.expected) {
+    public setDataToWork(inputData: dataset): void {
+        if(!inputData || !inputData.length) {
             throw new Error('Test suite data has wrong format. Terminating...');
         }
-        this.inputData = testData;
+        this.inputData = inputData;
     }
     
     public run(): void {
-        this.setInputLayerValues(this.inputData.inputs);
+        this.setInputLayerValues(this.inputData);
     
         this.getWorkingLayers().forEach(layer => {
             layer.activateNeurons();
