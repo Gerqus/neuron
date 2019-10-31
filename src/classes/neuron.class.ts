@@ -7,8 +7,9 @@ export class Neuron {
     public connections: Connection[];
     activationFunction: activationFunction;
     state: number;
-    private connectionsErrorsSum: number;
+    /*private*/ connectionsErrorsSum: number;
     private delta: number;
+    private bias: number;
 
     constructor(activationFunctionToAssign: activationFunction) {
         this.connections = [];
@@ -16,6 +17,8 @@ export class Neuron {
         this.activationFunction = activationFunctionToAssign;
         this.connectionsErrorsSum = 0;
         this.delta = 0;
+        this.bias = Math.random() * 0.5 - 0.25;
+        // this.bias = 0;
     }
 
     connect(inputNeuron: Neuron, weight: number = 1): void {
@@ -29,27 +32,37 @@ export class Neuron {
         this.connectionsErrorsSum += error;
     }
 
-    public calculateDelta() {
-        return this.connectionsErrorsSum * this.activationDerivativeCalculation();
+    public calculateDelta(): void {
+        this.delta = this.connectionsErrorsSum * this.activationDerivativeCalculation();
     }
 
     public getDelta() {
         return this.delta;
     }
 
-    private activationDerivativeCalculation(): number {
-        if (this.activationFunction !== sigmoid) { // only for sigmoid for now
-            throw new Error("Currently only sigmoids neuron can learn. Terminating...");
-        }
+    public clearErrorRates(): void {
+        this.connectionsErrorsSum = 0;
+    }
+
+    /*private*/ activationDerivativeCalculation(): number {
+        // if (this.activationFunction !== sigmoid) { // only for sigmoid for now
+        //     throw new Error(`Currently only sigmoids neuron can learn. Found "${this.activationFunction}" function. Terminating...`);
+        // }
 
         return this.state * (1 - this.state); // because derivative of sigmoid function is d(x)(1−d(x))
+    }
+
+    public updateConnectionsWeights(): void {
+        this.connections.forEach(connection => {
+            connection.weight += 0.1 * this.delta * connection.inputNeuron.state;
+        });
     }
 
     getInputsWeightedSum(): number {
         return this.connections.reduce(
             (sum, connection): number => sum += connection.inputNeuron.state * connection.weight,
             0
-        )
+        );
     }
 
     activate(): void {

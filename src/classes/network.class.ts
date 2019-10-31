@@ -44,18 +44,32 @@ export class Network {
         );
     }
 
-    public learn(expectedOutput: dataset): void {
+    public backpropagateError(expectedOutput: dataset): void {
+        this.layers.forEach(layer => {
+            layer.getNeurons().forEach(neuron => {
+                neuron.clearErrorRates();
+            })
+        })
+
         this.getOutputLayer().getNeurons().forEach((outputNeuron, neuronIndex) => {
-            outputNeuron.increaseConnectionsErrorsSum(expectedOutput[neuronIndex] - outputNeuron.state);
+            outputNeuron.increaseConnectionsErrorsSum((outputNeuron.state - expectedOutput[neuronIndex])**2);
         });
 
-        this.getWorkingLayers().reverse().forEach(currentLayer => {
-            currentLayer.getNeurons().forEach(neuron => {
+        this.getWorkingLayers().reverse().forEach((currentLayer, layerNumber) => {
+            currentLayer.getNeurons().forEach((neuron, neuronNumber) => {
                 neuron.calculateDelta();
                 neuron.connections.forEach(connection => {
                     connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
                 });
             })
+        });
+    }
+
+    public learn(): void {
+        this.getWorkingLayers().forEach(currentLayer => {
+            currentLayer.getNeurons().forEach(neuron => {
+                neuron.updateConnectionsWeights();
+            });
         });
     }
 
@@ -84,8 +98,8 @@ export class Network {
         this.layers.forEach((layer, layerIndex) => {
             console.log(`-- Layer ${layerIndex}:`);
             layer.getNeurons().forEach((neuron, neuronIndex) => {
-                const connectionsWeights = neuron.connections.map((conn) => Math.round(conn.weight * 1_000_000) / 1_000_000);
-                console.log(`- Neuron ${neuronIndex} state:${neuron.state} connections:${connectionsWeights.toString()} sum:${neuron.getInputsWeightedSum()} output:${neuron.activationFunction(neuron.getInputsWeightedSum())}`);
+                const connectionsWeights = neuron.connections.map((conn) => `[${Math.round(conn.weight * 1_000_000) / 1_000_000}, ${0.1 * neuron.getDelta() * conn.inputNeuron.state}]`);
+                console.log(`- Neuron ${neuronIndex} state:${neuron.state} connections:${connectionsWeights} sum:${neuron.getInputsWeightedSum()} output:${neuron.activationFunction(neuron.getInputsWeightedSum())} connectionsErrorsSum:${neuron.connectionsErrorsSum} activationDerivativeCalculation:${neuron.activationDerivativeCalculation()} delta:${neuron.getDelta()}`);
             });
         })
     }

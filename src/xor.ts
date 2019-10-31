@@ -39,77 +39,54 @@ const testData: testData[] = [
         expected: [0]
     },
 ];
+let iterCounter: number = 0;
 
-network.setDataToWork(testData[0].inputs);
-network.run();
-network.learn(testData[0].expected);
-network.logNetworkOutput("#0");
-network.setDataToWork(testData[1].inputs);
-network.run();
-network.learn(testData[1].expected);
-network.logNetworkOutput("#1");
-network.setDataToWork(testData[2].inputs);
-network.run();
-network.learn(testData[2].expected);
-network.logNetworkOutput("#2");
-network.setDataToWork(testData[3].inputs);
-network.run();
-network.logNetworkOutput("#3");
-network.learn(testData[3].expected);
+function train(n: number) {
+    for(let i = 0; i < n; ++i) {
+        const dataSet = Math.floor(Math.random() * 4);
+        network.setDataToWork(testData[dataSet].inputs);
+        network.run();
+        network.backpropagateError(testData[dataSet].expected);
+        network.learn()
+    }
+    iterCounter += n;
+}
 
-console.log("\n..:: next ::..\n");
+function midLog(): void {
+    console.log(`\n..:: after ${iterCounter} ::..\n`);
+    network.setDataToWork(testData[0].inputs);
+    network.run();
+    network.backpropagateError(testData[0].expected);
+    console.log("Input:", testData[0].inputs);
+    console.log("Expected:", testData[0].expected);
+    network.logNetworkOutput("#0");
+    network.logLayersStatus("#0");
+    
+    network.setDataToWork(testData[1].inputs);
+    network.run();
+    network.backpropagateError(testData[1].expected);
+    console.log("Input:", testData[1].inputs);
+    console.log("Expected:", testData[1].expected);
+    network.logNetworkOutput("#1");
+    network.logLayersStatus("#1");
+    
+    network.setDataToWork(testData[2].inputs);
+    network.run();
+    network.backpropagateError(testData[2].expected);
+    console.log("Input:", testData[2].inputs);
+    console.log("Expected:", testData[2].expected);
+    network.logNetworkOutput("#2");
+    network.logLayersStatus("#2");
+    
+    network.setDataToWork(testData[3].inputs);
+    network.run();
+    network.backpropagateError(testData[3].expected);
+    console.log("Input:", testData[3].inputs);
+    console.log("Expected:", testData[3].expected);
+    network.logNetworkOutput("#3");
+    network.logLayersStatus("#3");
+}
 
-network.setDataToWork(testData[0].inputs);
-network.run();
-network.learn(testData[0].expected);
-network.logNetworkOutput("#0");
-network.setDataToWork(testData[1].inputs);
-network.run();
-network.learn(testData[1].expected);
-network.logNetworkOutput("#1");
-network.setDataToWork(testData[2].inputs);
-network.run();
-network.learn(testData[2].expected);
-network.logNetworkOutput("#2");
-network.setDataToWork(testData[3].inputs);
-network.run();
-network.logNetworkOutput("#3");
-network.learn(testData[3].expected);
-
-console.log("\n..:: next ::..\n");
-
-network.setDataToWork(testData[0].inputs);
-network.run();
-network.learn(testData[0].expected);
-network.logNetworkOutput("#0");
-network.setDataToWork(testData[1].inputs);
-network.run();
-network.learn(testData[1].expected);
-network.logNetworkOutput("#1");
-network.setDataToWork(testData[2].inputs);
-network.run();
-network.learn(testData[2].expected);
-network.logNetworkOutput("#2");
-network.setDataToWork(testData[3].inputs);
-network.run();
-network.logNetworkOutput("#3");
-network.learn(testData[3].expected);
-
-console.log("\n..:: next ::..\n");
-
-network.setDataToWork(testData[0].inputs);
-network.run();
-network.learn(testData[0].expected);
-network.logNetworkOutput("#0");
-network.setDataToWork(testData[1].inputs);
-network.run();
-network.learn(testData[1].expected);
-network.logNetworkOutput("#1");
-network.setDataToWork(testData[2].inputs);
-network.run();
-network.learn(testData[2].expected);
-network.logNetworkOutput("#2");
-network.setDataToWork(testData[3].inputs);
-network.run();
-network.logNetworkOutput("#3");
-network.learn(testData[3].expected);
+midLog();
+train(1000);
+midLog();
