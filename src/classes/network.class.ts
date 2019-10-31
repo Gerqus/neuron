@@ -44,7 +44,19 @@ export class Network {
         );
     }
 
-    public learn(): void {
+    public learn(expectedOutput: dataset): void {
+        this.getOutputLayer().getNeurons().forEach((outputNeuron, neuronIndex) => {
+            outputNeuron.increaseConnectionsErrorsSum(expectedOutput[neuronIndex] - outputNeuron.state);
+        });
+
+        this.getWorkingLayers().reverse().forEach(currentLayer => {
+            currentLayer.getNeurons().forEach(neuron => {
+                neuron.calculateDelta();
+                neuron.connections.forEach(connection => {
+                    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+                });
+            })
+        });
     }
 
     private getInputLayer(): Layer {
@@ -53,13 +65,6 @@ export class Network {
 
     private getOutputLayer(): Layer {
         return this.layers[this.layers.length - 1];
-    }
-
-    private getHiddenLayers(): Layer[] {
-        if (this.layers.length < 3) {
-            throw new Error('There are no hidden layers in this network. Panic! Terminating...');
-        }
-        return this.layers.slice(1, this.layers.length - 1);
     }
 
     private getWorkingLayers(): Layer[] {
