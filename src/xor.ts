@@ -5,8 +5,8 @@ import { Network } from './classes/network.class';
 const networkSchema: Neuron[][] = [];
 
 networkSchema[0] = [
-    new Neuron(bias),
-    new Neuron(bias),
+    new Neuron(bias, 0),
+    new Neuron(bias, 0),
 ]
 
 networkSchema[1] = [
@@ -68,7 +68,7 @@ function midLog(): void {
     console.log("Input:", testData[1].inputs);
     console.log("Expected:", testData[1].expected);
     network.logNetworkOutput("#1");
-    network.logLayersStatus("#1");
+    // network.logLayersStatus("#1");
     
     network.setDataToWork(testData[2].inputs);
     network.run();
@@ -76,7 +76,7 @@ function midLog(): void {
     console.log("Input:", testData[2].inputs);
     console.log("Expected:", testData[2].expected);
     network.logNetworkOutput("#2");
-    network.logLayersStatus("#2");
+    // network.logLayersStatus("#2");
     
     network.setDataToWork(testData[3].inputs);
     network.run();
@@ -88,5 +88,5 @@ function midLog(): void {
 }
 
 midLog();
-train(1000);
+train(10000);
 midLog();

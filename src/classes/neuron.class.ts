@@ -9,15 +9,15 @@ export class Neuron {
     state: number;
     /*private*/ connectionsErrorsSum: number;
     private delta: number;
-    private bias: number;
+    /*private*/ bias: number;
 
-    constructor(activationFunctionToAssign: activationFunction) {
+    constructor(activationFunctionToAssign: activationFunction, bias: number = Math.random() * 0.5) {
         this.connections = [];
         this.state = 0;
         this.activationFunction = activationFunctionToAssign;
         this.connectionsErrorsSum = 0;
         this.delta = 0;
-        this.bias = Math.random() * 0.5 - 0.25;
+        this.bias = bias;
         // this.bias = 0;
     }
 
@@ -58,11 +58,15 @@ export class Neuron {
         });
     }
 
+    public updateBias(): void {
+        this.bias += 0.1 * this.delta;
+    }
+
     getInputsWeightedSum(): number {
         return this.connections.reduce(
             (sum, connection): number => sum += connection.inputNeuron.state * connection.weight,
             0
-        );
+        ) + this.bias;
     }
 
     activate(): void {

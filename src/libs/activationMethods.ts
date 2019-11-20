@@ -3,10 +3,10 @@ function sigmoid(x: number): number {
 }
 sigmoid.toString = () => "sigmoid";
 
-function bipolarSigmoid(x: number): number {
-    return 1 / (1 + Math.pow(Math.E, -x));
-}
-bipolarSigmoid.toString = () => "bipolarSigmoid";
+// function bipolarSigmoid(x: number): number {
+//     return 1 / (1 + Math.pow(Math.E, -x));
+// }
+// bipolarSigmoid.toString = () => "bipolarSigmoid";
 
 function bias(x: number): number {
     return x;
@@ -15,6 +15,6 @@ bias.toString = () => "bias";
 
 export {
     sigmoid,
-    bipolarSigmoid,
+    // bipolarSigmoid,
     bias
 };

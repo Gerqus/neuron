@@ -52,23 +52,27 @@ export class Network {
         })
 
         this.getOutputLayer().getNeurons().forEach((outputNeuron, neuronIndex) => {
-            outputNeuron.increaseConnectionsErrorsSum((outputNeuron.state - expectedOutput[neuronIndex])**2);
+            outputNeuron.increaseConnectionsErrorsSum(expectedOutput[neuronIndex] - outputNeuron.state);
         });
 
-        this.getWorkingLayers().reverse().forEach((currentLayer, layerNumber) => {
-            currentLayer.getNeurons().forEach((neuron, neuronNumber) => {
-                neuron.calculateDelta();
-                neuron.connections.forEach(connection => {
-                    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
-                });
-            })
-        });
+        this.getWorkingLayers()
+            .reverse() // will work from ens, since it's BACKpropagation
+            .slice(0, this.layers.length - 2) // won't work on hidden layer, so we won't propate error from it to input layer
+            .forEach((currentLayer, layerNumber) => {
+                currentLayer.getNeurons().forEach((neuron, neuronNumber) => {
+                    neuron.calculateDelta();
+                    neuron.connections.forEach(connection => {
+                        connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+                    });
+                })
+            });
     }
 
     public learn(): void {
         this.getWorkingLayers().forEach(currentLayer => {
             currentLayer.getNeurons().forEach(neuron => {
                 neuron.updateConnectionsWeights();
+                neuron.updateBias();
             });
         });
     }
@@ -99,7 +103,7 @@ export class Network {
             console.log(`-- Layer ${layerIndex}:`);
             layer.getNeurons().forEach((neuron, neuronIndex) => {
                 const connectionsWeights = neuron.connections.map((conn) => `[${Math.round(conn.weight * 1_000_000) / 1_000_000}, ${0.1 * neuron.getDelta() * conn.inputNeuron.state}]`);
-                console.log(`- Neuron ${neuronIndex} state:${neuron.state} connections:${connectionsWeights} sum:${neuron.getInputsWeightedSum()} output:${neuron.activationFunction(neuron.getInputsWeightedSum())} connectionsErrorsSum:${neuron.connectionsErrorsSum} activationDerivativeCalculation:${neuron.activationDerivativeCalculation()} delta:${neuron.getDelta()}`);
+                console.log(`- Neuron ${neuronIndex} state:${neuron.state} connections:${connectionsWeights} sum:${neuron.getInputsWeightedSum()} output:${neuron.activationFunction(neuron.getInputsWeightedSum())} connectionsErrorsSum:${neuron.connectionsErrorsSum} activationDerivativeCalculation:${neuron.activationDerivativeCalculation()} delta:${neuron.getDelta()} bias:${neuron.bias}`);
             });
         })
     }
