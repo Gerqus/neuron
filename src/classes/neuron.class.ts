@@ -1,20 +1,21 @@
 import { Connection } from './connection.class';
 import { sigmoid } from '../libs/activationMethods';
+import { isArray } from 'util';
 
 type activationFunction = (x: number) => number;
 
 export class Neuron {
     public connections: Connection[];
-    activationFunction: activationFunction;
+    activationFunctions: activationFunction[];
     state: number;
     /*private*/ connectionsErrorsSum: number;
     private delta: number;
     /*private*/ bias: number;
 
-    constructor(activationFunctionToAssign: activationFunction, bias: number = Math.random() * 0.5) {
+    constructor(activationFunctionToAssign: activationFunction|activationFunction[], bias: number = Math.random() * 0.5) {
         this.connections = [];
         this.state = 0;
-        this.activationFunction = activationFunctionToAssign;
+        this.activationFunctions = isArray(activationFunctionToAssign) ? activationFunctionToAssign : [activationFunctionToAssign];
         this.connectionsErrorsSum = 0;
         this.delta = 0;
         this.bias = bias;
@@ -71,6 +72,6 @@ export class Neuron {
 
     activate(): void {
         const inputsSum: number = this.getInputsWeightedSum();
-        this.state = this.activationFunction(inputsSum);
+        this.state = this.activationFunctions.reduce((output, fn) => fn(output), inputsSum);
     }
 }

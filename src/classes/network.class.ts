@@ -56,10 +56,9 @@ export class Network {
         });
 
         this.getWorkingLayers()
-            .reverse() // will work from ens, since it's BACKpropagation
-            .slice(0, this.layers.length - 2) // won't work on hidden layer, so we won't propate error from it to input layer
-            .forEach((currentLayer, layerNumber) => {
-                currentLayer.getNeurons().forEach((neuron, neuronNumber) => {
+            .reverse() // will work from end, since it's BACKpropagation
+            .forEach((currentLayer) => {
+                currentLayer.getNeurons().forEach((neuron) => {
                     neuron.calculateDelta();
                     neuron.connections.forEach(connection => {
                         connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
@@ -97,15 +96,28 @@ export class Network {
         return this.getOutputLayer().getNeurons().map(neuron => neuron.state);
     }
 
-    logLayersStatus(label: string): void {
-        console.log(`=== ${label}: ===`);
+    getLayersStatus(label: string): string[] {
+        const log = [];
+        log.push(`\n\n=== ${label}: ===`);
         this.layers.forEach((layer, layerIndex) => {
-            console.log(`-- Layer ${layerIndex}:`);
+            log.push(`\n  Layer ${layerIndex}:`);
             layer.getNeurons().forEach((neuron, neuronIndex) => {
-                const connectionsWeights = neuron.connections.map((conn) => `[${Math.round(conn.weight * 1_000_000) / 1_000_000}, ${0.1 * neuron.getDelta() * conn.inputNeuron.state}]`);
-                console.log(`- Neuron ${neuronIndex} state:${neuron.state} connections:${connectionsWeights} sum:${neuron.getInputsWeightedSum()} output:${neuron.activationFunction(neuron.getInputsWeightedSum())} connectionsErrorsSum:${neuron.connectionsErrorsSum} activationDerivativeCalculation:${neuron.activationDerivativeCalculation()} delta:${neuron.getDelta()} bias:${neuron.bias}`);
+                const connectionsWeights = neuron.connections.map((conn) => `[weight: ${Math.round(conn.weight * 1_000_000) / 1_000_000}, state: ${conn.inputNeuron.state}]`);
+                log.push(`   Neuron ${neuronIndex}:`);
+                log.push(`    state:${neuron.state}`);
+                log.push(`    bias:${neuron.bias}`);
+                log.push(`    connections:`);
+            connectionsWeights.forEach((weight, i) => 
+                log.push((`     conn#${i}: ${weight}`))
+            );
+                log.push(`    inputsWeightedSum:${neuron.getInputsWeightedSum()}`);
+                log.push(`    output:${neuron.activationFunctions[0](neuron.getInputsWeightedSum())}`);
+                log.push(`    connectionsErrorsSum:${neuron.connectionsErrorsSum}`);
+                log.push(`    activationDerivativeCalculation:${neuron.activationDerivativeCalculation()}`);
+                log.push(`    delta:${neuron.getDelta()}`);
             });
-        })
+        });
+        return log;
     }
 
     private addLayer(layer: Layer): void {

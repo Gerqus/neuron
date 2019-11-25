@@ -1,11 +1,15 @@
 {
     "compilerOptions": {
-        "module": "esnext",
+        "module": "commonjs",
+        "lib": [
+            "es2017",
+            "dom"
+        ],
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "target": "esnext",
+        "target": "ES6",
         "sourceRoot": "./src",
         "outDir": "./dist"
     }

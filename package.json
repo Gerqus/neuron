@@ -8,7 +8,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "build": "tsc -t ES6 -m commonjs",
+    "build_watch": "tsc --watch",
     "xor": "node ./dist/xor.js"
   },
   "repository": {

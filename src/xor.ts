@@ -1,12 +1,12 @@
 import { Neuron } from './classes/neuron.class';
-import { bias, sigmoid } from './libs/activationMethods';
+import { bypass, sigmoid, round } from './libs/activationMethods';
 import { Network } from './classes/network.class';
 
 const networkSchema: Neuron[][] = [];
 
 networkSchema[0] = [
-    new Neuron(bias, 0),
-    new Neuron(bias, 0),
+    new Neuron(bypass, 0),
+    new Neuron(bypass, 0),
 ]
 
 networkSchema[1] = [
@@ -15,7 +15,7 @@ networkSchema[1] = [
 ]
 
 networkSchema[2] = [
-    new Neuron(sigmoid),
+    new Neuron([sigmoid, round]),
 ]
 
 const network = new Network(networkSchema);
@@ -39,11 +39,13 @@ const testData: testData[] = [
         expected: [0]
     },
 ];
+const trainingSetIndex = 0;
 let iterCounter: number = 0;
 
-function train(n: number) {
+function trainTimes(n: number) {
     for(let i = 0; i < n; ++i) {
-        const dataSet = Math.floor(Math.random() * 4);
+        const dataSet = Math.floor(Math.random() * testData.length);
+        // const dataSet = trainingSetIndex;
         network.setDataToWork(testData[dataSet].inputs);
         network.run();
         network.backpropagateError(testData[dataSet].expected);
@@ -52,15 +54,26 @@ function train(n: number) {
     iterCounter += n;
 }
 
+const logs: string[][] = [];
+
 function midLog(): void {
     console.log(`\n..:: after ${iterCounter} ::..\n`);
-    network.setDataToWork(testData[0].inputs);
+    
+    network.setDataToWork(testData[trainingSetIndex].inputs);
     network.run();
-    network.backpropagateError(testData[0].expected);
-    console.log("Input:", testData[0].inputs);
-    console.log("Expected:", testData[0].expected);
-    network.logNetworkOutput("#0");
-    network.logLayersStatus("#0");
+    network.backpropagateError(testData[trainingSetIndex].expected);
+    console.log("Input:", testData[trainingSetIndex].inputs);
+    console.log("Expected:", testData[trainingSetIndex].expected);
+    network.logNetworkOutput(`#${trainingSetIndex}`);
+    logs.push(network.getLayersStatus(logs.length == 0 ? "before" : "after"));
+    
+    // network.setDataToWork(testData[0].inputs);
+    // network.run();
+    // network.backpropagateError(testData[0].expected);
+    // console.log("Input:", testData[0].inputs);
+    // console.log("Expected:", testData[0].expected);
+    // network.logNetworkOutput("#0");
+    // // network.getLayersStatus("#0");
     
     network.setDataToWork(testData[1].inputs);
     network.run();
@@ -68,7 +81,7 @@ function midLog(): void {
     console.log("Input:", testData[1].inputs);
     console.log("Expected:", testData[1].expected);
     network.logNetworkOutput("#1");
-    // network.logLayersStatus("#1");
+    // network.getLayersStatus("#1");
     
     network.setDataToWork(testData[2].inputs);
     network.run();
@@ -76,7 +89,7 @@ function midLog(): void {
     console.log("Input:", testData[2].inputs);
     console.log("Expected:", testData[2].expected);
     network.logNetworkOutput("#2");
-    // network.logLayersStatus("#2");
+    // network.getLayersStatus("#2");
     
     network.setDataToWork(testData[3].inputs);
     network.run();
@@ -84,9 +97,21 @@ function midLog(): void {
     console.log("Input:", testData[3].inputs);
     console.log("Expected:", testData[3].expected);
     network.logNetworkOutput("#3");
-    network.logLayersStatus("#3");
+    // network.getLayersStatus("#3");
 }
 
 midLog();
-train(10000);
+trainTimes(1000);
 midLog();
+const colsSeparatorLength = 20;
+let longestLine = 0;
+logs.forEach(log => {
+    log.forEach(logLine => {
+        if(logLine.length > longestLine) longestLine = logLine.length;
+    });
+});
+
+logs[0].forEach((logLine, lineIndex) => {
+    const lineLength = longestLine + colsSeparatorLength - 1;
+    console.log(`${logLine.padEnd(lineLength)} ${logs[1][lineIndex].replace(/\n/g, " ")}`);
+});

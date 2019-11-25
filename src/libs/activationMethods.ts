@@ -8,13 +8,19 @@ sigmoid.toString = () => "sigmoid";
 // }
 // bipolarSigmoid.toString = () => "bipolarSigmoid";
 
-function bias(x: number): number {
+function bypass(x: number): number {
     return x;
 }
-bias.toString = () => "bias";
+bypass.toString = () => "bypass";
+
+function round(x: number): number {
+    return Math.round(x);
+}
+round.toString = () => "round";
 
 export {
     sigmoid,
     // bipolarSigmoid,
-    bias
+    bypass,
+    round,
 };
