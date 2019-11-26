@@ -40,6 +40,8 @@ const testData: testData[] = [
     },
 ];
 const trainingSetIndex = 0;
+let previousNetworkError = 0;
+let last100runsErrors: number[] = [];
 let iterCounter: number = 0;
 
 function trainTimes(n: number) {
@@ -49,13 +51,35 @@ function trainTimes(n: number) {
         network.setDataToWork(testData[dataSet].inputs);
         network.run();
         network.backpropagateError(testData[dataSet].expected);
-        network.learn()
+        network.learn();
+        if (n % 100000 == 0) checkProgress();
     }
     iterCounter += n;
 }
 
-const logs: string[][] = [];
+function checkProgress(): void {
+    const examplesErros = testData
+        .map(
+            (testDataPart) => {
+                network.setDataToWork(testDataPart.inputs);
+                network.run();
+                return network.getNetworkError(testDataPart.expected)
+            }
+        );
+    const currentNetworkError = examplesErros
+        .reduce(
+            (errorsSqSum, partialSqSum) =>
+                errorsSqSum + partialSqSum,
+            0
+        ) / testData.length; 
+    console.log(`Netowrk Accuracy: ${Math.round((1 - currentNetworkError) * 10000) / 100} : Netowrk Error change: ${currentNetworkError - previousNetworkError}`);
+    previousNetworkError = currentNetworkError;
+    last100runsErrors.push(previousNetworkError);
+    while(last100runsErrors.length > 100) last100runsErrors.shift();
+}
 
+
+const logs: string[][] = [];
 function midLog(): void {
     console.log(`\n..:: after ${iterCounter} ::..\n`);
     
@@ -67,13 +91,13 @@ function midLog(): void {
     network.logNetworkOutput(`#${trainingSetIndex}`);
     logs.push(network.getLayersStatus(logs.length == 0 ? "before" : "after"));
     
-    // network.setDataToWork(testData[0].inputs);
-    // network.run();
-    // network.backpropagateError(testData[0].expected);
-    // console.log("Input:", testData[0].inputs);
-    // console.log("Expected:", testData[0].expected);
-    // network.logNetworkOutput("#0");
-    // // network.getLayersStatus("#0");
+    network.setDataToWork(testData[0].inputs);
+    network.run();
+    network.backpropagateError(testData[0].expected);
+    console.log("Input:", testData[0].inputs);
+    console.log("Expected:", testData[0].expected);
+    network.logNetworkOutput("#0");
+    // network.getLayersStatus("#0");
     
     network.setDataToWork(testData[1].inputs);
     network.run();

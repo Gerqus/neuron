@@ -92,8 +92,19 @@ export class Network {
         this.getInputLayer().setNeuronsValues(inputData);
     }
 
-    private readOutputLayerValues(): number[] {
+    readOutputLayerValues(): number[] {
         return this.getOutputLayer().getNeurons().map(neuron => neuron.state);
+    }
+
+    getNetworkError(expectedValuesSet: number[]): number {
+        if (this.readOutputLayerValues().length !== expectedValuesSet.length) {
+            throw new Error('Expected network outputs count doesn\'t match output neurons count. Terminating...');
+        }
+        return this.readOutputLayerValues().reduce(
+            (sqSum, output, outputIndex) => 
+                sqSum + ((output - expectedValuesSet[outputIndex])**2),
+            0
+        ) / expectedValuesSet.length;
     }
 
     getLayersStatus(label: string): string[] {
