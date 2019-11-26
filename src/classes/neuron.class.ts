@@ -1,6 +1,5 @@
 import { Connection } from './connection.class';
 import { sigmoid } from '../libs/activationMethods';
-import { isArray } from 'util';
 
 type activationFunction = (x: number) => number;
 
@@ -15,7 +14,7 @@ export class Neuron {
     constructor(activationFunctionToAssign: activationFunction|activationFunction[], bias: number = Math.random() * 0.5) {
         this.connections = [];
         this.state = 0;
-        this.activationFunctions = isArray(activationFunctionToAssign) ? activationFunctionToAssign : [activationFunctionToAssign];
+        this.activationFunctions = Array.isArray(activationFunctionToAssign) ? activationFunctionToAssign : [activationFunctionToAssign];
         this.connectionsErrorsSum = 0;
         this.delta = 0;
         this.bias = bias;

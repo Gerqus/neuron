@@ -1,5 +1,5 @@
 import { Neuron } from './classes/neuron.class';
-import { bypass, sigmoid, round } from './libs/activationMethods';
+import { bypass, sigmoid } from './libs/activationMethods';
 import { Network } from './classes/network.class';
 
 const networkSchema: Neuron[][] = [];
@@ -15,7 +15,7 @@ networkSchema[1] = [
 ]
 
 networkSchema[2] = [
-    new Neuron([sigmoid, round]),
+    new Neuron(sigmoid),
 ]
 
 const network = new Network(networkSchema);
@@ -101,7 +101,7 @@ function midLog(): void {
 }
 
 midLog();
-trainTimes(1000);
+trainTimes(100000);
 midLog();
 const colsSeparatorLength = 20;
 let longestLine = 0;
@@ -111,6 +111,7 @@ logs.forEach(log => {
     });
 });
 
+console.log("\n\ntrainingSetIndex:", trainingSetIndex);
 logs[0].forEach((logLine, lineIndex) => {
     const lineLength = longestLine + colsSeparatorLength - 1;
     console.log(`${logLine.padEnd(lineLength)} ${logs[1][lineIndex].replace(/\n/g, " ")}`);
