@@ -1,5 +1,6 @@
 import { Layer } from "./layer.class";
 import { Neuron } from "./neuron.class";
+import { sigmoid } from "../libs/activationMethods";
 
 export class Network {
     private layers: Layer[] = [];
@@ -39,7 +40,7 @@ export class Network {
 
     public logNetworkOutput(runLabel?: string):void {
         console.log(`Output from last run (${runLabel}):`);
-        this.readOutputLayerValues().forEach(
+        this.getOutputLayerValues().forEach(
             (neuronState, index) => console.log(`Neuron#${index}: ${neuronState}`)
         );
     }
@@ -57,11 +58,11 @@ export class Network {
 
         this.getWorkingLayers()
             .reverse() // will work from end, since it's BACKpropagation
-            .forEach((currentLayer) => {
+            .forEach((currentLayer, layerIndex) => {
                 currentLayer.getNeurons().forEach((neuron) => {
                     neuron.calculateDelta();
                     neuron.connections.forEach(connection => {
-                        connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+                        connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta()); 
                     });
                 })
             });
@@ -92,19 +93,33 @@ export class Network {
         this.getInputLayer().setNeuronsValues(inputData);
     }
 
-    readOutputLayerValues(): number[] {
+    getOutputLayerValues(): number[] {
         return this.getOutputLayer().getNeurons().map(neuron => neuron.state);
     }
 
-    getNetworkError(expectedValuesSet: number[]): number {
-        if (this.readOutputLayerValues().length !== expectedValuesSet.length) {
+    getNetworkError(trainingDataset: testData[]): number {
+        if (this.getOutputLayerValues().length !== trainingDataset[0].expected.length) {
             throw new Error('Expected network outputs count doesn\'t match output neurons count. Terminating...');
         }
-        return this.readOutputLayerValues().reduce(
-            (sqSum, output, outputIndex) => 
-                sqSum + ((output - expectedValuesSet[outputIndex])**2),
-            0
-        ) / expectedValuesSet.length;
+        
+        return trainingDataset
+            .map(
+                (testDataPart) => {
+                    this.setDataToWork(testDataPart.inputs);
+                    this.run();
+                    return this.getOutputLayerValues().reduce(
+                        (sqSum, output, outputIndex) => 
+                            sqSum + ((output - testDataPart.expected[outputIndex])**2),
+                        0
+                    ) / testDataPart.expected.length;
+                }
+            )
+            .reduce(
+                (errorsSqSum, partialSqSum) =>
+                    errorsSqSum + partialSqSum,
+                0
+            ) / trainingDataset.length;
+        
     }
 
     getLayersStatus(label: string): string[] {

@@ -1,5 +1,4 @@
 import { Connection } from './connection.class';
-import { sigmoid } from '../libs/activationMethods';
 
 type activationFunction = (x: number) => number;
 
@@ -54,7 +53,7 @@ export class Neuron {
 
     public updateConnectionsWeights(): void {
         this.connections.forEach(connection => {
-            connection.weight += 0.1 * this.delta * connection.inputNeuron.state;
+            connection.weight += 0.1 * Math.sqrt(Math.abs(100 * this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
         });
     }
 

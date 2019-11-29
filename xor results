@@ -1,0 +1,103 @@
+epoch01 - epoch in which net is <= 0.1 error rate
+
+epochs: 100000
+failures: 15,85%
+mean epoch01: ??
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta() / sigmoid(layerIndex)**2);
+        AND
+    connection.weight += 0.1 * this.delta * connection.inputNeuron.state;
+
+epochs: 100000
+failures: 4,8%
+mean epoch01: 20079
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+        AND
+    connection.weight += 0.1 * this.delta * connection.inputNeuron.state;
+
+epochs: 100000
+failures: 4,7%
+mean epoch01: 21083
+meanError: 0.098%
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta() / (layerIndex + 1));
+        AND
+    connection.weight += 0.1 * this.delta * connection.inputNeuron.state;
+
+epochs: 50000
+failures: 0%
+mean epoch01: 1722
+meanError: 0.0281%
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta() / (layerIndex + 1));
+        AND
+    connection.weight += (10 * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+
+epochs: 5000
+samples: 1000
+failures: 97.8%
+mean epoch01: 2270
+meanError: 6.9377% ???????
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+        AND
+    connection.weight += (100 * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+
+epochs: up to success, no more than 5000
+samples: 1000
+failures: 97.2%
+mean epoch01: 2228
+meanError: 7.2821% ???????
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+        AND
+    connection.weight += (100 * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+
+epochs: up to success, no more than 5000
+samples: 1000
+failures: 2.2%
+mean epoch01: 994
+meanError: 9.9095% ???????
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+        AND
+    connection.weight += Math.sqrt(100 * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+
+epochs: up to success, no more than 5000
+samples: 1000
+failures: 0.1%
+mean epoch01: 1730
+meanError: 0.0993%
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+        AND
+    connection.weight += (10 * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+
+epochs: up to success, no more than 5000
+samples: 10000
+failures: 0.17%
+mean epoch01: 1725
+meanError: 0.0993%
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+        AND
+    connection.weight += (10 * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+
+epochs: up to success, no more than 5000
+samples: 10000
+failures: 2.94%
+mean epoch01: 998
+meanError: 0.0991%
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+        AND
+    connection.weight += Math.sqrt(100 * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+
+epochs: 5000
+samples: 10000
+failures: 3.07%
+mean epoch01: 1003
+meanError: 0.0044%
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+        AND
+    connection.weight += Math.sqrt(100 * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+
+epochs: 5000
+samples: 10000
+failures: 0.08%
+mean epoch01: 1731
+meanError: 0.0066%
+    connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+        AND
+    connection.weight += 10 * Math.abs(this.connectionsErrorsSum) * this.delta * connection.inputNeuron.state;

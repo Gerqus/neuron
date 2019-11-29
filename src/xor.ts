@@ -18,7 +18,7 @@ networkSchema[2] = [
     new Neuron(sigmoid),
 ]
 
-const network = new Network(networkSchema);
+let network = new Network(networkSchema);
 network.interlinkNeurons();
 
 const testData: testData[] = [
@@ -40,8 +40,7 @@ const testData: testData[] = [
     },
 ];
 const trainingSetIndex = 0;
-let previousNetworkError = 0;
-let last100runsErrors: number[] = [];
+let epoch01Number = -1;
 let iterCounter: number = 0;
 
 function trainTimes(n: number) {
@@ -52,32 +51,13 @@ function trainTimes(n: number) {
         network.run();
         network.backpropagateError(testData[dataSet].expected);
         network.learn();
-        if (n % 100000 == 0) checkProgress();
+        if(network.getNetworkError(testData) <= 0.1 && epoch01Number == -1) {
+            epoch01Number = i;
+            // break;
+        }
     }
     iterCounter += n;
 }
-
-function checkProgress(): void {
-    const examplesErros = testData
-        .map(
-            (testDataPart) => {
-                network.setDataToWork(testDataPart.inputs);
-                network.run();
-                return network.getNetworkError(testDataPart.expected)
-            }
-        );
-    const currentNetworkError = examplesErros
-        .reduce(
-            (errorsSqSum, partialSqSum) =>
-                errorsSqSum + partialSqSum,
-            0
-        ) / testData.length; 
-    console.log(`Netowrk Accuracy: ${Math.round((1 - currentNetworkError) * 10000) / 100} : Netowrk Error change: ${currentNetworkError - previousNetworkError}`);
-    previousNetworkError = currentNetworkError;
-    last100runsErrors.push(previousNetworkError);
-    while(last100runsErrors.length > 100) last100runsErrors.shift();
-}
-
 
 const logs: string[][] = [];
 function midLog(): void {
@@ -91,13 +71,13 @@ function midLog(): void {
     network.logNetworkOutput(`#${trainingSetIndex}`);
     logs.push(network.getLayersStatus(logs.length == 0 ? "before" : "after"));
     
-    network.setDataToWork(testData[0].inputs);
-    network.run();
-    network.backpropagateError(testData[0].expected);
-    console.log("Input:", testData[0].inputs);
-    console.log("Expected:", testData[0].expected);
-    network.logNetworkOutput("#0");
-    // network.getLayersStatus("#0");
+    // network.setDataToWork(testData[0].inputs);
+    // network.run();
+    // network.backpropagateError(testData[0].expected);
+    // console.log("Input:", testData[0].inputs);
+    // console.log("Expected:", testData[0].expected);
+    // network.logNetworkOutput("#0");
+    // // network.getLayersStatus("#0");
     
     network.setDataToWork(testData[1].inputs);
     network.run();
@@ -124,19 +104,99 @@ function midLog(): void {
     // network.getLayersStatus("#3");
 }
 
-midLog();
-trainTimes(100000);
-midLog();
-const colsSeparatorLength = 20;
-let longestLine = 0;
-logs.forEach(log => {
-    log.forEach(logLine => {
-        if(logLine.length > longestLine) longestLine = logLine.length;
-    });
-});
+// midLog();
+// trainTimes(100000);
+// midLog();
+interface run {
+    epoch01: number,
+    error: number,
+    results: number[],
+    network: Network
+}
+const runs: run[] = [];
+let runsCount = 0;
+function runNewNet() {
+    epoch01Number = -1;
+    iterCounter = 0;
+    networkSchema[0] = [
+        new Neuron(bypass, 0),
+        new Neuron(bypass, 0),
+    ]
 
-console.log("\n\ntrainingSetIndex:", trainingSetIndex);
-logs[0].forEach((logLine, lineIndex) => {
-    const lineLength = longestLine + colsSeparatorLength - 1;
-    console.log(`${logLine.padEnd(lineLength)} ${logs[1][lineIndex].replace(/\n/g, " ")}`);
-});
+    networkSchema[1] = [
+        new Neuron(sigmoid),
+        new Neuron(sigmoid),
+    ]
+
+    networkSchema[2] = [
+        new Neuron(sigmoid),
+    ]
+    network = new Network(networkSchema);
+    network.interlinkNeurons();
+    trainTimes(5000);
+    runs.push({
+        epoch01: epoch01Number,
+        error: network.getNetworkError(testData),
+        results: network.getOutputLayerValues(),
+        network
+    });
+    console.log("runsCount:", runsCount++);
+}
+
+console.time("runs time");
+for(let i = 0; i < 10; ++i) {
+    runNewNet()
+}
+console.timeEnd("runs time");
+
+function roundWithPrecision(value: number, precision: number = 2): number {
+    const mult = Math.pow(10, precision);
+
+    return Math.round(value * mult) / mult;
+}
+
+const failedRuns = runs.filter((run) => run.epoch01 === -1).length;
+const meanErrorWithoutFailures = roundWithPrecision(
+    runs.reduce(
+        (err, run) =>
+            run.epoch01 === -1 ?
+                err :
+                err + run.network.getNetworkError(testData),
+        0
+    ) / (runs.length - failedRuns),
+    4
+);
+const failedRunsRate = roundWithPrecision(failedRuns / runs.length);
+const meanEpoch01WithoutFailures = Math.round(runs.reduce((epochsSum, run) => run.epoch01 === -1 ? epochsSum : epochsSum + run.epoch01, 0) / (runs.length - failedRuns));
+const maxEpoch01 = runs.reduce((maxEpoch, run) =>
+    maxEpoch > run.epoch01 && run.epoch01 > -1 ?
+        maxEpoch :
+        run.epoch01,
+    0);
+const minEpoch01 = runs.reduce((minEpoch, run) =>
+    minEpoch < run.epoch01 && run.epoch01 > -1 ?
+        minEpoch :
+        run.epoch01,
+    maxEpoch01);
+console.log("Runs summary:");
+console.log("meanErrorWithoutFailures:", meanErrorWithoutFailures * 100, "%");
+console.log("meanEpoch01WithoutFailures:", meanEpoch01WithoutFailures);
+console.log("min epoch01:", minEpoch01);
+console.log("max epoch01:", maxEpoch01);
+console.log("allRuns:", runs.length);
+console.log("failedRuns:", failedRuns);
+console.log("failedRunsRate:", failedRunsRate * 100, "%");
+
+// const colsSeparatorLength = 20;
+// let longestLine = 0;
+// logs.forEach(log => {
+//     log.forEach(logLine => {
+//         if(logLine.length > longestLine) longestLine = logLine.length;
+//     });
+// });
+
+// console.log("\n\ntrainingSetIndex:", trainingSetIndex);
+// logs[0].forEach((logLine, lineIndex) => {
+//     const lineLength = longestLine + colsSeparatorLength - 1;
+//     console.log(`${logLine.padEnd(lineLength)} ${logs[1][lineIndex].replace(/\n/g, " ")}`);
+// });
