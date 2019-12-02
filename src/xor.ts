@@ -1,5 +1,5 @@
 import { Neuron } from './classes/Neuron.class';
-import { bypass, sigmoid } from './libs/activationMethods';
+import { bypass, sigmoid, bipolarSigmoid } from './libs/activationMethods';
 import { Network } from './classes/Network.class';
 
 const networkSchema: Neuron[][] = [];
@@ -51,9 +51,9 @@ function trainTimes(n: number) {
         network.run();
         network.backpropagateError(testData[dataSet].expected);
         network.learn();
-        if (network.getNetworkError(testData) <= 0.1 && epoch01Number === -1) {
+        if (network.getNetworkError(testData) <= 0.01 && epoch01Number === -1) {
             epoch01Number = i;
-            // break;
+            break;
         }
     }
     iterCounter += n;
@@ -145,7 +145,7 @@ function runNewNet() {
 
 // tslint:disable-next-line: no-console
 console.time('runs time');
-for (let i = 0; i < 10; ++i) {
+for (let i = 0; i < 100; ++i) {
     runNewNet();
 }
 // tslint:disable-next-line: no-console
@@ -160,10 +160,11 @@ function roundWithPrecision(value: number, precision: number = 2): number {
 const failedRuns = runs.filter((run) => run.epoch01 === -1).length;
 const meanErrorWithoutFailures = roundWithPrecision(
     runs.reduce(
-        (err, run) =>
-            run.epoch01 === -1 ?
+        (err, run, i) => {
+            return run.epoch01 === -1 ?
                 err :
-                err + run.network.getNetworkError(testData),
+                err + run.network.getNetworkError(testData);
+        },
         0
     ) / (runs.length - failedRuns),
     4
@@ -177,16 +178,20 @@ const meanEpoch01WithoutFailures =
             0
         ) / (runs.length - failedRuns)
     );
-const maxEpoch01 = runs.reduce((maxEpoch, run) =>
-    maxEpoch > run.epoch01 && run.epoch01 > -1 ?
-        maxEpoch :
-        run.epoch01,
-    0);
-const minEpoch01 = runs.reduce((minEpoch, run) =>
-    minEpoch < run.epoch01 && run.epoch01 > -1 ?
-        minEpoch :
-        run.epoch01,
-    maxEpoch01);
+const maxEpoch01 = runs.reduce(
+    (maxEpoch, run) =>
+        (maxEpoch > run.epoch01 && run.epoch01 > -1) ?
+            maxEpoch :
+            run.epoch01,
+    0
+);
+const minEpoch01 = runs.reduce(
+    (minEpoch, run) =>
+        (run.epoch01 < minEpoch && run.epoch01 > -1) ?
+            run.epoch01 :
+            minEpoch,
+    maxEpoch01
+);
 console.log('Runs summary:');
 console.log('meanErrorWithoutFailures:', meanErrorWithoutFailures * 100, '%');
 console.log('meanEpoch01WithoutFailures:', meanEpoch01WithoutFailures);
