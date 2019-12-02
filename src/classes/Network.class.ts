@@ -1,6 +1,5 @@
-import { Layer } from "./layer.class";
-import { Neuron } from "./neuron.class";
-import { sigmoid } from "../libs/activationMethods";
+import { Layer } from './Layer.class';
+import { Neuron } from './Neuron.class';
 
 export class Network {
     private layers: Layer[] = [];
@@ -13,32 +12,34 @@ export class Network {
 
         schema.forEach(layerSchema => {
             this.addLayer(new Layer(layerSchema));
-        })
-    }
-
-    public interlinkNeurons(): void {
-        this.getWorkingLayers().forEach((currentLayer, previousLayerIndex) => { // previousLayerIndex: since hidden layers ommit input layer, indexes are shifted by one
-            const previousLayer = this.layers[previousLayerIndex];
-            currentLayer.interlinkNeurons(previousLayer);
         });
     }
 
+    public interlinkNeurons(): void {
+        this.getWorkingLayers().forEach(
+            (currentLayer, previousLayerIndex) => { // previousLayerIndex: since hidden layers ommit input layer, indexes are shifted by one
+                const previousLayer = this.layers[previousLayerIndex];
+                currentLayer.interlinkNeurons(previousLayer);
+            }
+        );
+    }
+
     public setDataToWork(inputData: dataset): void {
-        if(!inputData || !inputData.length) {
+        if (!inputData || !inputData.length) {
             throw new Error('Test suite data has wrong format. Terminating...');
         }
         this.inputData = inputData;
     }
-    
+
     public run(): void {
         this.setInputLayerValues(this.inputData);
-    
+
         this.getWorkingLayers().forEach(layer => {
             layer.activateNeurons();
         });
     }
 
-    public logNetworkOutput(runLabel?: string):void {
+    public logNetworkOutput(runLabel?: string): void {
         console.log(`Output from last run (${runLabel}):`);
         this.getOutputLayerValues().forEach(
             (neuronState, index) => console.log(`Neuron#${index}: ${neuronState}`)
@@ -49,8 +50,8 @@ export class Network {
         this.layers.forEach(layer => {
             layer.getNeurons().forEach(neuron => {
                 neuron.clearErrorRates();
-            })
-        })
+            });
+        });
 
         this.getOutputLayer().getNeurons().forEach((outputNeuron, neuronIndex) => {
             outputNeuron.increaseConnectionsErrorsSum(expectedOutput[neuronIndex] - outputNeuron.state);
@@ -62,9 +63,9 @@ export class Network {
                 currentLayer.getNeurons().forEach((neuron) => {
                     neuron.calculateDelta();
                     neuron.connections.forEach(connection => {
-                        connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta()); 
+                        connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
                     });
-                })
+                });
             });
     }
 
@@ -101,15 +102,15 @@ export class Network {
         if (this.getOutputLayerValues().length !== trainingDataset[0].expected.length) {
             throw new Error('Expected network outputs count doesn\'t match output neurons count. Terminating...');
         }
-        
+
         return trainingDataset
             .map(
                 (testDataPart) => {
                     this.setDataToWork(testDataPart.inputs);
                     this.run();
                     return this.getOutputLayerValues().reduce(
-                        (sqSum, output, outputIndex) => 
-                            sqSum + ((output - testDataPart.expected[outputIndex])**2),
+                        (sqSum, output, outputIndex) =>
+                            sqSum + ((output - testDataPart.expected[outputIndex]) ** 2),
                         0
                     ) / testDataPart.expected.length;
                 }
@@ -119,21 +120,24 @@ export class Network {
                     errorsSqSum + partialSqSum,
                 0
             ) / trainingDataset.length;
-        
+
     }
 
     getLayersStatus(label: string): string[] {
-        const log = [];
+        const log: any[] = [];
         log.push(`\n\n=== ${label}: ===`);
         this.layers.forEach((layer, layerIndex) => {
             log.push(`\n  Layer ${layerIndex}:`);
             layer.getNeurons().forEach((neuron, neuronIndex) => {
-                const connectionsWeights = neuron.connections.map((conn) => `[weight: ${Math.round(conn.weight * 1_000_000) / 1_000_000}, state: ${conn.inputNeuron.state}]`);
+                const connectionsWeights = neuron.connections.map(
+                    (conn) =>
+                        `[weight: ${Math.round(conn.weight * 1_000_000) / 1_000_000}, state: ${conn.inputNeuron.state}]`
+                );
                 log.push(`   Neuron ${neuronIndex}:`);
                 log.push(`    state:${neuron.state}`);
                 log.push(`    bias:${neuron.bias}`);
                 log.push(`    connections:`);
-            connectionsWeights.forEach((weight, i) => 
+            connectionsWeights.forEach((weight, i) =>
                 log.push((`     conn#${i}: ${weight}`))
             );
                 log.push(`    inputsWeightedSum:${neuron.getInputsWeightedSum()}`);

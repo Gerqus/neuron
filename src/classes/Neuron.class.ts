@@ -1,4 +1,5 @@
-import { Connection } from './connection.class';
+import { Connection } from './Connection.class';
+import { LEARNING_FACTOR } from '../libs/consts';
 
 type activationFunction = (x: number) => number;
 
@@ -53,7 +54,7 @@ export class Neuron {
 
     public updateConnectionsWeights(): void {
         this.connections.forEach(connection => {
-            connection.weight += 0.1 * Math.sqrt(Math.abs(100 * this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+            connection.weight += LEARNING_FACTOR * Math.abs(this.connectionsErrorsSum) * this.delta * connection.inputNeuron.state;
         });
     }
 
