@@ -99,7 +99,7 @@ export class Network {
     }
 
     getNetworkError(trainingDataset: testData[]): number {
-        if (this.getOutputLayerValues().length !== trainingDataset[0].expected.length) {
+        if (this.getOutputLayer().neurons.length !== trainingDataset[0].expected.length) {
             throw new Error('Expected network outputs count doesn\'t match output neurons count. Terminating...');
         }
 
