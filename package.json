@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "codelyzer": "^4.5.0"
+    "codelyzer": "^4.5.0",
+    "tslint": "^5.20.1"
   },
   "devDependencies": {},
   "scripts": {
