@@ -1,8 +1,4 @@
-export interface ActivationFunctionSchema {
-    (x: number): number;
-    toString: () => string;
-    derivative: (x: number) => number;
-}
+import { ActivationFunctionSchema } from '../classes/ActivationFunction.class';
 
 const sigmoid: ActivationFunctionSchema = function (x: number): number {
     return 1 / (1 + Math.exp(-x));
