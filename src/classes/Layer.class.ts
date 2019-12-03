@@ -1,10 +1,10 @@
-import { Neuron } from './Neuron.class';
+import { Neuron, NeuronSchema } from './Neuron.class';
 
 export class Layer {
     /*private*/ neurons: Neuron[];
 
-    constructor(layerSchema: Neuron[]) {
-        this.neurons = layerSchema;
+    constructor(layerSchema: NeuronSchema[]) {
+        this.neurons = layerSchema.map(schema => new Neuron(schema));
     }
 
     public getNeurons(): Neuron[] {

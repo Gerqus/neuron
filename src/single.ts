@@ -1,16 +1,21 @@
-import { Neuron } from './classes/Neuron.class';
+import { NeuronSchema } from './classes/Neuron.class';
 import { bypass, sigmoid } from './libs/activationMethods';
 import { Network } from './classes/Network.class';
 
-const networkSchema: Neuron[][] = [];
+const networkSchema: NeuronSchema[][] = [];
 
-networkSchema[0] = [
-    new Neuron(bypass),
-];
+networkSchema.push([
+    {
+        activationFunctions: [bypass],
+        bias: 0
+    },
+]);
 
-networkSchema[1] = [
-    new Neuron(sigmoid, 0),
-];
+networkSchema.push([
+    {
+        activationFunctions: [sigmoid],
+    },
+]);
 
 const network = new Network(networkSchema);
 network.interlinkNeurons();

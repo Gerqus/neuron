@@ -4,25 +4,31 @@ import { Network } from './classes/Network.class';
 
 const networkSchema: NeuronSchema[][] = [];
 
-networkSchema[0] = [
+networkSchema.push([
     {
-        activationFunction: bypass,
+        activationFunctions: [bypass],
         bias: 0
     },
     {
-        activationFunction: bypass,
+        activationFunctions: [bypass],
         bias: 0
     },
-];
+]);
 
-networkSchema[1] = [
-    new Neuron(sigmoid),
-    new Neuron(sigmoid),
-];
+networkSchema.push([
+    {
+        activationFunctions: [sigmoid],
+    },
+    {
+        activationFunctions: [sigmoid],
+    },
+]);
 
-networkSchema[2] = [
-    new Neuron(sigmoid),
-];
+networkSchema.push([
+    {
+        activationFunctions: [sigmoid],
+    },
+]);
 
 let network = new Network(networkSchema);
 network.interlinkNeurons();
@@ -124,19 +130,6 @@ let runsCount = 0;
 function runNewNet() {
     epoch01Number = -1;
     iterCounter = 0;
-    networkSchema[0] = [
-        new Neuron(bypass, 0),
-        new Neuron(bypass, 0),
-    ];
-
-    networkSchema[1] = [
-        new Neuron(sigmoid),
-        new Neuron(sigmoid),
-    ];
-
-    networkSchema[2] = [
-        new Neuron(sigmoid),
-    ];
     network = new Network(networkSchema);
     network.interlinkNeurons();
     trainTimes(5000);
