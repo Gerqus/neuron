@@ -1,12 +1,18 @@
-import { Neuron } from './classes/Neuron.class';
+import { NeuronSchema } from './classes/Neuron.class';
 import { bypass, sigmoid, bipolarSigmoid } from './libs/activationMethods';
 import { Network } from './classes/Network.class';
 
-const networkSchema: Neuron[][] = [];
+const networkSchema: NeuronSchema[][] = [];
 
 networkSchema[0] = [
-    new Neuron(bypass, 0),
-    new Neuron(bypass, 0),
+    {
+        activationFunction: bypass,
+        bias: 0
+    },
+    {
+        activationFunction: bypass,
+        bias: 0
+    },
 ];
 
 networkSchema[1] = [

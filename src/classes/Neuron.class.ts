@@ -1,20 +1,24 @@
 import { Connection } from './Connection.class';
 import { LEARNING_FACTOR } from '../libs/consts';
+import { ActivationFunctionSchema } from './ActivationFunction.class';
 
-type activationFunction = (x: number) => number;
+export interface NeuronSchema {
+    activationFunctions: ActivationFunctionSchema[];
+    bias?: number;
+}
 
 export class Neuron {
     public connections: Connection[];
-    activationFunctions: activationFunction[];
+    activationFunctions: ActivationFunctionSchema[];
     state: number;
     /*private*/ connectionsErrorsSum: number;
     private delta: number;
     /*private*/ bias: number;
 
-    constructor(activationFunctionToAssign: activationFunction|activationFunction[], bias: number = Math.random() * 0.5) {
+    constructor({activationFunctions, bias = Math.random() * 0.5}: NeuronSchema) {
         this.connections = [];
         this.state = 0;
-        this.activationFunctions = Array.isArray(activationFunctionToAssign) ? activationFunctionToAssign : [activationFunctionToAssign];
+        this.activationFunctions = activationFunctions;
         this.connectionsErrorsSum = 0;
         this.delta = 0;
         this.bias = bias;
