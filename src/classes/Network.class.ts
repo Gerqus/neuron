@@ -1,11 +1,13 @@
 import { Layer } from './Layer.class';
-import { Neuron, NeuronSchema } from './Neuron.class';
+import { NeuronSchema } from './Neuron.class';
+
+export type NetworkSchema = NeuronSchema[][];
 
 export class Network {
     private layers: Layer[] = [];
     private inputData: dataset;
 
-    constructor(schema: NeuronSchema[][]) {
+    constructor(schema: NetworkSchema) {
         if (schema.length < 2) {
             throw new Error('Network must consist of at least 2 layers. Terminating...');
         }
