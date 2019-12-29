@@ -1,19 +1,19 @@
 import { NeuronSchema } from './classes/Neuron.class';
-import { bypass, sigmoid } from './libs/activationMethods';
+import { ActivationFunctions } from './libs/activationFunctions';
 import { Network } from './classes/Network.class';
 
 const networkSchema: NeuronSchema[][] = [];
 
 networkSchema.push([
     {
-        activationFunctions: [bypass],
+        activationFunctions: [ActivationFunctions.bypass],
         bias: 0
     },
 ]);
 
 networkSchema.push([
     {
-        activationFunctions: [sigmoid],
+        activationFunctions: [ActivationFunctions.sigmoid],
     },
 ]);
 
