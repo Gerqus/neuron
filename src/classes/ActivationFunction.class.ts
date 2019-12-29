@@ -1,11 +1,8 @@
 export interface ActivationFunctionSchema {
     (x: number): number;
-    toString: () => string;
+    toString: () => ActivationFunctionNames;
     derivative: (x: number) => number;
 }
-
-// export const ActivationFunctionNames = ['sigmoid', 'bipolarSigmoid', 'bypass'];
-// export type ActivationFunctionName = typeof ActivationFunctionNames[number];
 
 export enum ActivationFunctionNames {
     SIGMOID = 'sigmoid',

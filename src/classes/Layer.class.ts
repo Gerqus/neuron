@@ -11,14 +11,6 @@ export class Layer {
         return this.neurons;
     }
 
-    public interlinkNeurons(inputLayer: Layer): void {
-        this.neurons.forEach((currentNeuron) => {
-            inputLayer.getNeurons().forEach((inputNeuron) => {
-                currentNeuron.connect(inputNeuron, Math.random());
-            });
-        });
-    }
-
     public setNeuronsValues(inputNeuronValues: number[]): void {
         if (this.getNeuronsCount() !== inputNeuronValues.length) {
             throw new Error('Input data points count doesn\'t match input neurons count. Terminating...');

@@ -5,24 +5,28 @@ import { ActivationFunctionSchema } from './ActivationFunction.class';
 export interface NeuronSchema {
     activationFunctions: ActivationFunctionSchema[];
     bias?: number;
+    initialState? :number;
+    learningFactor?: number;
 }
 
 export class Neuron {
     public connections: Connection[];
     activationFunctions: ActivationFunctionSchema[];
     state: number;
-    /*private*/ connectionsErrorsSum: number;
+    private connectionsErrorsSum: number;
     private delta: number;
-    /*private*/ bias: number;
+    private bias: number;
+    private learningFactor: number;
 
-    constructor({activationFunctions, bias = Math.random() * 0.5}: NeuronSchema) {
-        this.connections = [];
-        this.state = 0;
+    constructor({activationFunctions, bias = Math.random() * 0.5, initialState = 0, learningFactor = 0.1}: NeuronSchema) {
         this.activationFunctions = activationFunctions;
+        this.bias = bias;
+        this.state = initialState;
+        this.learningFactor = learningFactor;
+
+        this.connections = [];
         this.connectionsErrorsSum = 0;
         this.delta = 0;
-        this.bias = bias;
-        // this.bias = 0;
     }
 
     connect(inputNeuron: Neuron, weight: number = 1): void {
@@ -58,7 +62,7 @@ export class Neuron {
 
     public updateConnectionsWeights(): void {
         this.connections.forEach(connection => {
-            connection.weight += LEARNING_FACTOR * Math.abs(this.connectionsErrorsSum) * this.delta * connection.inputNeuron.state;
+            connection.weight += (this.learningFactor * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
         });
     }
 
@@ -66,15 +70,23 @@ export class Neuron {
         this.bias += 0.1 * this.delta;
     }
 
-    getInputsWeightedSum(): number {
+    public getInputsWeightedSum(): number {
         return this.connections.reduce(
             (sum, connection): number => sum += connection.inputNeuron.state * connection.weight,
             0
         ) + this.bias;
     }
 
-    activate(): void {
+    public activate(): void {
         const inputsSum: number = this.getInputsWeightedSum();
         this.state = this.activationFunctions.reduce((output, fn) => fn(output), inputsSum);
+    }
+
+    public getBias(): number {
+        return this.bias;
+    }
+
+    public getConnectionsErrorsSum(): number {
+        return this.connectionsErrorsSum;
     }
 }
