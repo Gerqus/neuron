@@ -2,7 +2,9 @@ export interface ActivationFunctionSchema {
     (x: number): number;
     toString: () => ActivationFunctionNames;
     derivative: (x: number) => number;
-    params?: number[];
+    params?: {
+        [key: string]: number;
+    };
 }
 
 export enum ActivationFunctionNames {

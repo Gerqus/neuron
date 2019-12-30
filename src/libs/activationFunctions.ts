@@ -22,21 +22,27 @@ bypass.derivative = () => 1;
 
 
 const ELU: ActivationFunctionSchema = function(x: number): number {
-    return x >= 0 ? x : this.params[0] * (Math.exp(x) - 1);
+    return x >= 0 ? x : this.params.alpha * (Math.exp(x) - 1);
 };
 ELU.toString = () => ActivationFunctionNames.ELU;
 ELU.derivative = function(x: number): number {
-    return x >= 0 ? 1 : this.params[0] * Math.exp(x);
+    return x >= 0 ? 1 : this.params.alphs * Math.exp(x);
 };
-ELU.params = [0.1];
+ELU.params = {
+    alpha: 0.1,
+};
 
 
 const swish: ActivationFunctionSchema = function(x: number): number {
-    return x / (1 + Math.exp(-x));
+    return x * sigmoid(x);
 };
 swish.toString = () => ActivationFunctionNames.SWISH;
 swish.derivative = function(x: number): number {
-    return (Math.exp(-x) * (x + 1) + 1) / Math.pow(1 + Math.exp(-x), 2);
+    // return (Math.exp(-x) * (x + 1) + 1) / Math.pow(1 + Math.exp(-x), 2);
+    return sigmoid(x * this.params.beta) + x * this.params.beta * sigmoid(x * this.params.beta) * (1 - sigmoid(x * this.params.beta));
+};
+swish.params = {
+    beta: 1,
 };
 
 
