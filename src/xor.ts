@@ -1,16 +1,11 @@
 import { NetworkSchema } from './classes/Network.class';
 import { ActivationFunctions } from './libs/activationFunctions';
+import { NeuronsLib } from './libs/neurons';
 
 const networkSchema: NetworkSchema = {
     inputLayer: [
-        {
-            activationFunction: ActivationFunctions.bypass,
-            bias: 0,
-        },
-        {
-            activationFunction: ActivationFunctions.bypass,
-            bias: 0,
-        },
+        NeuronsLib.InputNeuron,
+        NeuronsLib.InputNeuron
     ],
     hiddenLayers: [
         [
