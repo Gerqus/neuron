@@ -5,12 +5,14 @@
   "main": "index.js",
   "dependencies": {
     "codelyzer": "^4.5.0",
-    "tslint": "^5.20.1"
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.4"
   },
   "devDependencies": {},
   "scripts": {
     "build_watch": "tsc --watch",
-    "xor": "node ./dist/xor.js"
+    "xor": "node ./dist/xor.js",
+    "lint-fix": "tslint --fix --project ."
   },
   "repository": {
     "type": "git",

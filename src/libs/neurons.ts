@@ -12,5 +12,5 @@ interface NeuronsLib {
 }
 
 export const NeuronsLib: NeuronsLib = {
-    InputNeuron
+    InputNeuron,
 };

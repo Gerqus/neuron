@@ -31,7 +31,7 @@ export class Neuron {
     connect(inputNeuron: Neuron, weight: number = 1): void {
         this.connections.push({
             inputNeuron,
-            weight
+            weight,
         });
     }
 
