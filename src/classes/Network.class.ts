@@ -147,7 +147,7 @@ export class Network {
                 log.push(`   Neuron ${neuronIndex}:`);
                 log.push(`    state:${neuron.state}`);
                 log.push(`    bias:${neuron.getBias()}`);
-                log.push(`    connections:`);
+                log.push(`    incoming connections:`);
             connectionsWeights.forEach((weight, i) =>
                 log.push((`     conn#${i}: ${weight}`))
             );
