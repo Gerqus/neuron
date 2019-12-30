@@ -1,4 +1,4 @@
-import { NetworkSchema, Network } from './classes/Network.class';
+import { NetworkSchema } from './classes/Network.class';
 import { ActivationFunctions } from './libs/activationFunctions';
 
 const networkSchema: NetworkSchema = [
@@ -31,10 +31,7 @@ const networkSchema: NetworkSchema = [
     ],
 ];
 
-const network = new Network(networkSchema);
-network.interlinkNeurons();
-
-const testDataSet: testData[] = [
+const trainDataset: testData[] = [
     {
         inputs: [1, 0],
         expected: [1]
@@ -53,21 +50,5 @@ const testDataSet: testData[] = [
     },
 ];
 
-network.setTrainingCases(testDataSet);
-function getMeanNetworkError(net: Network, testData: testData[]) {
-    return testData.reduce(
-        (errorsSum, testCase) =>
-            errorsSum + net.getError(testCase),
-        0
-    ) / testData.length;
-}
-const epochs = 20000;
-network.train(epochs, (net) => getMeanNetworkError(net, testDataSet) < 0.001);
-
-network.run(testDataSet[0].inputs);
-network.getLayersStatus(`after ${epochs} for ${testDataSet[0].inputs}`).forEach((logLine) => console.log(logLine));
-
-network.run(testDataSet[2].inputs);
-network.getLayersStatus(`after ${epochs} for ${testDataSet[2].inputs}`).forEach((logLine) => console.log(logLine));
-
-console.log('\n\n\n\n\n=============================================\n\n\n\n\n')
+export const XORNetworkSchema = networkSchema;
+export const XORTrainDataset = trainDataset;
