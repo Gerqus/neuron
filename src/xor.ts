@@ -6,12 +6,10 @@ const networkSchema: NetworkSchema = {
         {
             activationFunction: ActivationFunctions.bypass,
             bias: 0,
-            learningFactor: 10,
         },
         {
             activationFunction: ActivationFunctions.bypass,
             bias: 0,
-            learningFactor: 10,
         },
     ],
     hiddenLayers: [
