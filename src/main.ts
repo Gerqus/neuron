@@ -1,27 +1,27 @@
-import { NetworkSchema, Network } from "./classes/Network.class";
-import { ActivationFunctions } from "./libs/activationFunctions";
+import { NetworkSchema, Network } from './classes/Network.class';
+import { ActivationFunctions } from './libs/activationFunctions';
 
 const networkSchema: NetworkSchema = [
     [
         {
-            activationFunctions: [ActivationFunctions.bypass],
+            activationFunction: ActivationFunctions.bypass,
             bias: 0
         },
         {
-            activationFunctions: [ActivationFunctions.bypass],
+            activationFunction: ActivationFunctions.bypass,
             bias: 0
         },
     ],
     [
         {
-            activationFunctions: [ActivationFunctions.sigmoid],
+            activationFunction: ActivationFunctions.sigmoid,
         },
         {
-            activationFunctions: [ActivationFunctions.sigmoid],
+            activationFunction: ActivationFunctions.sigmoid,
         },
-    ],[
+    ], [
         {
-            activationFunctions: [ActivationFunctions.sigmoid],
+            activationFunction: ActivationFunctions.sigmoid,
         },
     ],
 ];
@@ -49,10 +49,10 @@ const testDataSet: testData[] = [
 ];
 
 network.setTrainingCases(testDataSet);
-function getMeanNetworkError(network: Network, testData: testData[]) {
+function getMeanNetworkError(net: Network, testData: testData[]) {
     return testData.reduce(
         (errorsSum, testCase) =>
-            errorsSum + network.getError(testCase),
+            errorsSum + net.getError(testCase),
         0
     ) / testData.length;
 }

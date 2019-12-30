@@ -1,25 +1,24 @@
 import { Connection } from './Connection.class';
-import { LEARNING_FACTOR } from '../libs/consts';
 import { ActivationFunctionSchema } from './ActivationFunction.class';
 
 export interface NeuronSchema {
-    activationFunctions: ActivationFunctionSchema[];
+    activationFunction: ActivationFunctionSchema;
     bias?: number;
-    initialState? :number;
+    initialState?: number;
     learningFactor?: number;
 }
 
 export class Neuron {
     public connections: Connection[];
-    activationFunctions: ActivationFunctionSchema[];
+    activationFunction: ActivationFunctionSchema;
     state: number;
     private connectionsErrorsSum: number;
     private delta: number;
     private bias: number;
     private learningFactor: number;
 
-    constructor({activationFunctions, bias = Math.random() * 0.5, initialState = 0, learningFactor = 0.1}: NeuronSchema) {
-        this.activationFunctions = activationFunctions;
+    constructor({activationFunction, bias = Math.random() * 0.5, initialState = 0, learningFactor = 0.1}: NeuronSchema) {
+        this.activationFunction = activationFunction;
         this.bias = bias;
         this.state = initialState;
         this.learningFactor = learningFactor;
@@ -53,11 +52,7 @@ export class Neuron {
     }
 
     /*private*/ activationDerivativeCalculation(): number {
-        // if (this.activationFunction !== sigmoid) { // only for sigmoid for now
-        //     throw new Error(`Currently only sigmoids neuron can learn. Found "${this.activationFunction}" function. Terminating...`);
-        // }
-
-        return this.state * (1 - this.state); // because derivative of sigmoid function is d(x)(1−d(x))
+        return this.activationFunction.derivative(this.state);
     }
 
     public updateConnectionsWeights(): void {
@@ -79,7 +74,7 @@ export class Neuron {
 
     public activate(): void {
         const inputsSum: number = this.getInputsWeightedSum();
-        this.state = this.activationFunctions.reduce((output, fn) => fn(output), inputsSum);
+        this.state = this.activationFunction(inputsSum);
     }
 
     public getBias(): number {

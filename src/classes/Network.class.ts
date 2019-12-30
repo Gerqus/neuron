@@ -26,7 +26,7 @@ export class Network {
             linkingFunction(this.getWorkingLayers());
         } else {
             this.getWorkingLayers().forEach(
-                (currentLayer, previousLayerIndex) => { // previousLayerIndex: since hidden layers ommit input layer, indexes are shifted by one
+                (currentLayer, previousLayerIndex) => { // previousLayerIndex: hidden layers ommit input layer, indexes are shifted by one
                     const previousLayer = this.layers[previousLayerIndex];
                     currentLayer.neurons.forEach((currentNeuron) => {
                         previousLayer.getNeurons().forEach((inputNeuron) => {
@@ -52,9 +52,9 @@ export class Network {
         });
 
         if (errorFound) {
-            throw new Error("Data model doesn't match network topology! Terminating...")
+            throw new Error('Data model doesn\'t match network topology! Terminating...');
         }
-        
+
 
         this.trainingCases = trainingCases;
     }
@@ -74,7 +74,7 @@ export class Network {
             this.backpropagateError();
             this.learn();
 
-            if (successConditionFunction && successConditionFunction(this)) { //success
+            if (successConditionFunction && successConditionFunction(this)) { // success
                 return i;
             }
         }
@@ -152,7 +152,7 @@ export class Network {
                 log.push((`     conn#${i}: ${weight}`))
             );
                 log.push(`    inputsWeightedSum:${neuron.getInputsWeightedSum()}`);
-                log.push(`    output:${neuron.activationFunctions[0](neuron.getInputsWeightedSum())}`);
+                log.push(`    output:${neuron.activationFunction(neuron.getInputsWeightedSum())}`);
                 log.push(`    connectionsErrorsSum:${neuron.getConnectionsErrorsSum()}`);
                 log.push(`    activationDerivativeCalculation:${neuron.getDelta() / neuron.getConnectionsErrorsSum()}`);
                 log.push(`    delta:${neuron.getDelta()}`);

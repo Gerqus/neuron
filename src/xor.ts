@@ -7,12 +7,12 @@ const networkSchema: NeuronSchema[][] = [];
 
 networkSchema.push([
     {
-        activationFunctions: [ActivationFunctions.bypass],
+        activationFunction: ActivationFunctions.bypass,
         bias: 0,
         learningFactor: 10,
     },
     {
-        activationFunctions: [ActivationFunctions.bypass],
+        activationFunction: ActivationFunctions.bypass,
         bias: 0,
         learningFactor: 10,
     },
@@ -20,18 +20,18 @@ networkSchema.push([
 
 networkSchema.push([
     {
-        activationFunctions: [ActivationFunctions.sigmoid],
+        activationFunction: ActivationFunctions.sigmoid,
         learningFactor: 10,
     },
     {
-        activationFunctions: [ActivationFunctions.sigmoid],
+        activationFunction: ActivationFunctions.sigmoid,
         learningFactor: 10,
     },
 ]);
 
 networkSchema.push([
     {
-        activationFunctions: [ActivationFunctions.sigmoid],
+        activationFunction: ActivationFunctions.sigmoid,
         learningFactor: 10,
     },
 ]);
@@ -54,26 +54,6 @@ const testData: testData[] = [
         expected: [0]
     },
 ];
-const trainingSetIndex = 0;
-let epoch01Number = -1;
-let iterCounter = 0;
-
-
-// function trainTimes(n: number) {
-//     for (let i = 0; i < n; ++i) {
-//         const dataSet = Math.floor(Math.random() * testData.length);
-//         // const dataSet = trainingSetIndex;
-//         network.setDataToWork(testData[dataSet].inputs);
-//         network.run();
-//         network.backpropagateError(testData[dataSet].expected);
-//         network.learn();
-//         if (network.getNetworkError(testData) <= 0.01 && epoch01Number === -1) {
-//             epoch01Number = i;
-//             break;
-//         }
-//     }
-//     iterCounter += n;
-// }
 
 // const logs: string[][] = [];
 // function midLog(): void {
@@ -133,7 +113,6 @@ const runs: Run[] = [];
 let runsCount = 0;
 const logs: string[][] = [];
 function runNewNet() {
-    iterCounter = 0;
     const network = new Network(networkSchema);
     network.interlinkNeurons();
     network.setTrainingCases(testData);
@@ -151,7 +130,6 @@ function runNewNet() {
     });
     console.log('runsCount:', ++runsCount);
 }
-
 // tslint:disable-next-line: no-console
 console.time('runs time');
 // for (let i = 0; i < 100; ++i) {
@@ -224,7 +202,6 @@ logs.forEach(log => {
     });
 });
 
-console.log("\n\ntrainingSetIndex:", trainingSetIndex);
 logs[0].forEach((logLine, lineIndex) => {
     const lineLength = longestLine + colsSeparatorLength - 1;
     console.log(`${logLine.padEnd(lineLength)} ${logs[1][lineIndex].replace(/\n/g, " ")}`);
