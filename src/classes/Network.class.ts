@@ -3,7 +3,11 @@ import { NeuronSchema } from './Neuron.class';
 import { LinkingFunctionSchema } from './LinkingFunction.class';
 import { getRandomElement } from '../utils';
 
-export type NetworkSchema = NeuronSchema[][];
+export interface NetworkSchema {
+    inputLayer: NeuronSchema[];
+    hiddenLayers?: NeuronSchema[][];
+    outputLayer:  NeuronSchema[];
+}
 export type WorkingLayers = Layer[];
 
 export class Network {
@@ -12,13 +16,17 @@ export class Network {
     private trainingCases: testData[];
 
     constructor(schema: NetworkSchema) {
-        if (schema.length < 2) {
-            throw new Error('Network must consist of at least 2 layers (input and output). Terminating...');
+        if (!schema.inputLayer || !schema.outputLayer) {
+            throw new Error('Network must have input and output layers. Terminating...');
         }
 
-        schema.forEach(layerSchema => {
-            this.addLayer(new Layer(layerSchema));
-        });
+        this.addLayer(new Layer(schema.inputLayer));
+        if (schema.hiddenLayers) {
+            schema.hiddenLayers.forEach((layerSchema) => {
+                this.addLayer(new Layer(layerSchema));
+            });
+        }
+        this.addLayer(new Layer(schema.outputLayer));
     }
 
     public interlinkNeurons(linkingFunction?: LinkingFunctionSchema): void {

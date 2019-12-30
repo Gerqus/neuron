@@ -1,8 +1,8 @@
 import { NetworkSchema } from './classes/Network.class';
 import { ActivationFunctions } from './libs/activationFunctions';
 
-const networkSchema: NetworkSchema = [
-    [
+const networkSchema: NetworkSchema = {
+    inputLayer: [
         {
             activationFunction: ActivationFunctions.bypass,
             bias: 0,
@@ -14,22 +14,25 @@ const networkSchema: NetworkSchema = [
             learningFactor: 10,
         },
     ],
-    [
-        {
-            activationFunction: ActivationFunctions.sigmoid,
-            learningFactor: 10,
-        },
-        {
-            activationFunction: ActivationFunctions.sigmoid,
-            learningFactor: 10,
-        },
-    ], [
+    hiddenLayers: [
+        [
+            {
+                activationFunction: ActivationFunctions.sigmoid,
+                learningFactor: 10,
+            },
+            {
+                activationFunction: ActivationFunctions.sigmoid,
+                learningFactor: 10,
+            },
+        ]
+    ],
+    outputLayer: [
         {
             activationFunction: ActivationFunctions.sigmoid,
             learningFactor: 10,
         },
     ],
-];
+};
 
 const trainDataset: testData[] = [
     {
