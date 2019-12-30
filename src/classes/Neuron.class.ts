@@ -51,7 +51,7 @@ export class Neuron {
         this.connectionsErrorsSum = 0;
     }
 
-    /*private*/ activationDerivativeCalculation(): number {
+    private activationDerivativeCalculation(): number {
         return this.activationFunction.derivative(this.state);
     }
 
