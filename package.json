@@ -11,7 +11,7 @@
   "devDependencies": {},
   "scripts": {
     "build_watch": "tsc --watch",
-    "xor": "node ./dist/xor.js",
+    "start": "nodemon ./dist/main.js",
     "lint-fix": "tslint --fix --project ."
   },
   "repository": {
