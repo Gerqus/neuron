@@ -54,7 +54,6 @@ export class Neuron {
     }
 
     private activationDerivativeCalculation(): number {
-        // console.log("inputs sum:", this.getInputsWeightedSum());
         return this.activationFunction.derivative(this.state);
     }
 
