@@ -16,6 +16,7 @@ export class Neuron {
     private delta: number;
     private bias: number;
     private learningFactor: number;
+    private inputsSum: number;
 
     constructor({activationFunction, bias = Math.random() * 0.5, initialState = 0, learningFactor = 0.1}: NeuronSchema) {
         this.activationFunction = activationFunction;
@@ -26,6 +27,7 @@ export class Neuron {
         this.connections = [];
         this.connectionsErrorsSum = 0;
         this.delta = 0;
+        this.inputsSum = 0;
     }
 
     connect(inputNeuron: Neuron, weight: number = 1): void {
@@ -52,6 +54,7 @@ export class Neuron {
     }
 
     private activationDerivativeCalculation(): number {
+        // console.log("inputs sum:", this.getInputsWeightedSum());
         return this.activationFunction.derivative(this.state);
     }
 
@@ -73,8 +76,8 @@ export class Neuron {
     }
 
     public activate(): void {
-        const inputsSum: number = this.getInputsWeightedSum();
-        this.state = this.activationFunction(inputsSum);
+        this.inputsSum = this.getInputsWeightedSum();
+        this.state = this.activationFunction(this.inputsSum);
     }
 
     public getBias(): number {

@@ -5,7 +5,7 @@ const sigmoid: ActivationFunctionSchema = function (x: number): number {
 };
 sigmoid.derivative = function (x: number) {
     return x * (1 - x);
-}
+};
 sigmoid.toString = () => ActivationFunctionNames.SIGMOID;
 
 
@@ -14,7 +14,7 @@ const bipolarSigmoid: ActivationFunctionSchema = function(x: number): number {
 };
 bipolarSigmoid.derivative = (x: number) => {
     return 2 * Math.exp(x) / ((Math.exp(x) + 1) ** 2);
-}
+};
 bipolarSigmoid.toString = () => ActivationFunctionNames.BIPOLAR_SIGMOID;
 
 
@@ -23,7 +23,7 @@ const bypass: ActivationFunctionSchema = function(x: number): number {
 };
 bypass.derivative = function () {
     return 1;
-}
+};
 bypass.toString = () => ActivationFunctionNames.BYPASS;
 
 

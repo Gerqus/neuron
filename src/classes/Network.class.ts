@@ -14,6 +14,7 @@ export class Network {
     private layers: Layer[] = [];
     private chosenTrainingSet: testData;
     private trainingCases: testData[];
+    private epochsTrained = 0;
 
     constructor(schema: NetworkSchema) {
         if (!schema.inputLayer || !schema.outputLayer) {
@@ -67,6 +68,10 @@ export class Network {
         this.trainingCases = trainingCases;
     }
 
+    public getTrainingCases(): testData[] {
+        return this.trainingCases;
+    }
+
     public run(inputData: dataset): void {
         this.setInputLayerValues(inputData);
 
@@ -81,6 +86,8 @@ export class Network {
             this.run(this.chosenTrainingSet.inputs);
             this.backpropagateError();
             this.learn();
+
+            ++this.epochsTrained;
 
             if (successConditionFunction && successConditionFunction(this)) { // success
                 return i;
@@ -167,6 +174,10 @@ export class Network {
             });
         });
         return log;
+    }
+
+    public getEpochsTrained(): number {
+        return this.epochsTrained;
     }
 
     private addLayer(layer: Layer): void {
