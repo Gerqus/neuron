@@ -13,4 +13,5 @@ export enum ActivationFunctionNames {
     BYPASS = 'bypass',
     ELU = 'ELU',
     SWISH = 'swish',
+    SQUARE = 'square',
 }

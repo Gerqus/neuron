@@ -14,7 +14,7 @@ export function showTrainingResults(network: Network): void {
         network.run(dataset.inputs);
         console.log(`After ${network.getEpochsTrained()} epochs for ${dataset.inputs}:`);
         let outputStringFormatted: string;
-        if (dataset.expected[0] - network.getOutputLayerValues()[0] < 0.1) {
+        if (Math.abs(dataset.expected[0] - network.getOutputLayerValues()[0]) < 0.1) {
             outputStringFormatted = chalk.bold.greenBright(network.getOutputLayerValues());
         } else {
             outputStringFormatted = chalk.bold.redBright(network.getOutputLayerValues());

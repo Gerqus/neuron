@@ -52,6 +52,16 @@ swish.params = {
 swish.toString = () => ActivationFunctionNames.SWISH;
 
 
+const square: ActivationFunctionSchema = function(x: number): number {
+    return x ** 2;
+};
+square.derivative = function(x: number): number {
+    // return (Math.exp(-x) * (x + 1) + 1) / Math.pow(1 + Math.exp(-x), 2);
+    return 2 * x;
+};
+square.toString = () => ActivationFunctionNames.SQUARE;
+
+
 export const ActivationFunctions = {
     sigmoid,
     bipolarSigmoid,
