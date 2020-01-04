@@ -111,7 +111,7 @@ export class Network {
         });
 
         this.getOutputLayer().getNeurons().forEach((outputNeuron, neuronIndex) => {
-            outputNeuron.increaseConnectionsErrorsSum(this.chosenTrainingSet.expected[neuronIndex] - outputNeuron.state);
+            outputNeuron.increaseCostsSum(this.chosenTrainingSet.expected[neuronIndex] - outputNeuron.state);
         });
 
         this.getWorkingLayers()
@@ -120,7 +120,7 @@ export class Network {
                 currentLayer.getNeurons().forEach((neuron) => {
                     neuron.calculateDelta();
                     neuron.connections.forEach(connection => {
-                        connection.inputNeuron.increaseConnectionsErrorsSum(connection.weight * neuron.getDelta());
+                        connection.inputNeuron.increaseCostsSum(connection.weight * neuron.getDelta());
                     });
                 });
             });
@@ -168,8 +168,8 @@ export class Network {
             );
                 log.push(`    inputsWeightedSum:${neuron.getInputsWeightedSum()}`);
                 log.push(`    output:${neuron.activationFunction(neuron.getInputsWeightedSum())}`);
-                log.push(`    connectionsErrorsSum:${neuron.getConnectionsErrorsSum()}`);
-                log.push(`    activationDerivativeCalculation:${neuron.getDelta() / neuron.getConnectionsErrorsSum()}`);
+                log.push(`    costsSum:${neuron.getCostsSum()}`);
+                log.push(`    activationDerivativeCalculation:${neuron.getDelta() / neuron.getCostsSum()}`);
                 log.push(`    delta:${neuron.getDelta()}`);
             });
         });

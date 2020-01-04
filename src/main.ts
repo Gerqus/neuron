@@ -1,17 +1,60 @@
 import { XORNetworkSchema, XORTrainDataset } from './xor';
-import { getMeanNetworkError, showTrainingResults } from './lab';
+import { getMeanNetworkError, showTrainingResults, Plotter } from './lab';
 import { Network } from './classes/Network.class';
 
-const epochs = 20000;
-const XORNetwork = new Network(XORNetworkSchema);
-XORNetwork.interlinkNeurons();
-XORNetwork.setTrainingCases(XORTrainDataset);
+// const epochs = 20000;
+// const XORNetwork = new Network(XORNetworkSchema);
+// XORNetwork.interlinkNeurons();
+// XORNetwork.setTrainingCases(XORTrainDataset);
 
-showTrainingResults(XORNetwork);
-console.log('\n');
+// showTrainingResults(XORNetwork);
+// console.log('\n');
 
-XORNetwork.train(epochs, (net) => getMeanNetworkError(net, XORTrainDataset) < 0.001);
+// XORNetwork.train(epochs, (net) => getMeanNetworkError(net, XORTrainDataset) < 0.001);
 
-showTrainingResults(XORNetwork);
+// showTrainingResults(XORNetwork);
 
-console.log('\n=============================================\n');
+// console.log('\n=============================================\n');
+
+const PlotterInst = new Plotter();
+
+const serieFoo = PlotterInst.addSerie('Foo', [20, 210, 100]);
+const serieBar = PlotterInst.addSerie('Bar', [190, 110, 20]);
+const serieBaz = PlotterInst.addSerie('Bar', [190, 20, 90]);
+
+serieFoo.addPoint(0);
+serieFoo.addPoint(14.457);
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieFoo.addPoint(10);
+serieBar.addPoint(26);
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieFoo.addPoint(15);
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieBar.addPoint(6);
+serieBar.addPoint(0);
+serieBar.addPoint(1);
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieBar.addPoint(10);
+serieFoo.addPoint(16);
+serieFoo.addPoint(16);
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieFoo.addPoint(12);
+serieFoo.addPoint(1);
+serieBar.addPoint(10);
+serieFoo.addPoint(25);
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieBar.addPoint(25);
+serieFoo.addPoint(10);
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieBar.addPoint(14);
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+serieBar.addPoint(47);
+serieFoo.addPoint(50);
+serieBar.addPoint(50);
+serieBaz.addPoint((4 * Math.random()) ** (4 * Math.random()));
+
+PlotterInst.draw();

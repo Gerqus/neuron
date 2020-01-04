@@ -11,18 +11,15 @@ const networkSchema: NetworkSchema = {
         [
             {
                 activationFunction: ActivationFunctions.sigmoid,
-                learningFactor: 10,
             },
             {
                 activationFunction: ActivationFunctions.sigmoid,
-                learningFactor: 10,
             },
         ],
     ],
     outputLayer: [
         {
             activationFunction: ActivationFunctions.sigmoid,
-            learningFactor: 10,
         },
     ],
 };

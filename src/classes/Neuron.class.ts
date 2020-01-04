@@ -12,7 +12,7 @@ export class Neuron {
     public connections: Connection[];
     activationFunction: ActivationFunctionSchema;
     state: number;
-    private connectionsErrorsSum: number;
+    private costsSum: number;
     private delta: number;
     private bias: number;
     private learningFactor: number;
@@ -25,7 +25,7 @@ export class Neuron {
         this.learningFactor = learningFactor;
 
         this.connections = [];
-        this.connectionsErrorsSum = 0;
+        this.costsSum = 0;
         this.delta = 0;
         this.inputsSum = 0;
     }
@@ -37,12 +37,12 @@ export class Neuron {
         });
     }
 
-    public increaseConnectionsErrorsSum(error: number): void {
-        this.connectionsErrorsSum += error;
+    public increaseCostsSum(error: number): void {
+        this.costsSum += error;
     }
 
     public calculateDelta(): void {
-        this.delta = this.connectionsErrorsSum * this.activationDerivativeCalculation();
+        this.delta = this.costsSum * this.activationDerivativeCalculation();
     }
 
     public getDelta() {
@@ -50,7 +50,7 @@ export class Neuron {
     }
 
     public clearErrorRates(): void {
-        this.connectionsErrorsSum = 0;
+        this.costsSum = 0;
     }
 
     private activationDerivativeCalculation(): number {
@@ -59,7 +59,7 @@ export class Neuron {
 
     public updateConnectionsWeights(): void {
         this.connections.forEach(connection => {
-            connection.weight += (this.learningFactor * Math.abs(this.connectionsErrorsSum)) * this.delta * connection.inputNeuron.state;
+            connection.weight += (this.learningFactor * Math.abs(this.costsSum)) * this.delta * connection.inputNeuron.state;
         });
     }
 
@@ -71,11 +71,11 @@ export class Neuron {
         return this.connections.reduce(
             (sum, connection): number => sum += connection.inputNeuron.state * connection.weight,
             0
-        ) + this.bias;
+        );
     }
 
     public activate(): void {
-        this.inputsSum = this.getInputsWeightedSum();
+        this.inputsSum = this.getInputsWeightedSum() + this.bias;
         this.state = this.activationFunction(this.inputsSum);
     }
 
@@ -83,7 +83,7 @@ export class Neuron {
         return this.bias;
     }
 
-    public getConnectionsErrorsSum(): number {
-        return this.connectionsErrorsSum;
+    public getCostsSum(): number {
+        return this.costsSum;
     }
 }
