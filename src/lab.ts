@@ -71,47 +71,47 @@ export class Plotter {
     private series: Serie[] = [];
     private plotLength = 0;
     private consoleColumns = process.stdout.columns;
-    private maxPlotValue = 50;
-    private minPlotValue = 0;
 
     private plotPoint(serie: Serie, pointIndex: number, color: Color, offset: number) {
         const value = serie.points[pointIndex];
         const previousValue = serie.points[pointIndex - 1];
         process.stdout.cursorTo(offset);
         process.stdout.write('\u2502');
-        if (typeof value === 'undefined') {
+        if (value !== 0 && !value) {
+            process.stdout.write('\u2219'.padStart(8, ' '));
             return;
         }
-        process.stdout.write((Math.round(value * 100) / 100).toString().padEnd(5, ' '));
-        const normValue = this.scaleToFit(value, serie);
-        const normPreviousValue = this.scaleToFit(previousValue, serie);
-        const difference = Math.abs(normPreviousValue - normValue);
-        if (normPreviousValue > normValue) {
-            process.stdout.moveCursor(normValue - 1, 0);
-            process.stdout.write(chalk.rgb(...color)(`\u250C${'\u2500'.repeat(difference - 1)}\u2518`));
-        } else if (normPreviousValue < normValue) {
-            process.stdout.moveCursor(normPreviousValue - 1, 0);
-            process.stdout.write(chalk.rgb(...color)(`\u2514${'\u2500'.repeat(difference - 1)}\u2510`));
+        process.stdout.write((Math.round(value * 100) / 100).toString().padEnd(7, ' ').concat('\u2219'));
+        const normValue = this.scaleToFit(value - serie.minValue, serie);
+        const normPreviousValue = this.scaleToFit(previousValue - serie.minValue, serie);
+        const difference = normPreviousValue - normValue;
+        if (difference > 0) {
+            process.stdout.moveCursor(normValue, 0);
+            process.stdout.write(chalk.rgb(...color)(`\u250C${'\u2500'.repeat(difference)}`));
+            process.stdout.moveCursor(-1, 0);
+            process.stdout.write(chalk.rgb(...color)('\u2518'));
+        } else if (difference < 0) {
+            process.stdout.moveCursor(normPreviousValue, 0);
+            process.stdout.write(chalk.rgb(...color)(`\u2514${'\u2500'.repeat(-1 * difference)}`));
+            process.stdout.moveCursor(-1, 0);
+            process.stdout.write(chalk.rgb(...color)('\u2510'));
         } else {
-            process.stdout.moveCursor(normValue - 1, 0);
+            process.stdout.moveCursor(normValue, 0);
             process.stdout.write(chalk.rgb(...color)(`\u2502`));
         }
     }
 
     private plotLine(linePointsIndex: number): void {
-        // this.series.forEach(serie => console.log(serie.id));
         _.orderBy(this.series, (serie) => serie.points[linePointsIndex], 'desc');
         this.series.forEach(serie => {
             this.plotPoint(serie, linePointsIndex, serie.color, serie.offset);
         });
         process.stdout.cursorTo(0);
         process.stdout.moveCursor(0, 1);
-        process.stdout.cursorTo(0);
-        // this.series.forEach(serie => console.log(serie.id));
     }
 
     private scaleToFit(value: number, serie: Serie) {
-        return Math.floor(value * ((serie.width - 6) / (serie.maxValue - serie.minValue)));
+        return Math.floor(value * ((serie.width - 10) / (serie.maxValue - serie.minValue)));
     }
 
     public addSerie(label?: string, color?: Color): Serie {
