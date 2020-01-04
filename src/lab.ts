@@ -114,8 +114,7 @@ export class Plotter {
         this.series.forEach(serie => {
             this.plotPoint(serie, linePointsIndex, serie.color, serie.offset);
         });
-        process.stdout.cursorTo(0);
-        process.stdout.moveCursor(0, 1);
+        process.stdout.write('\n');
     }
 
     private scaleToFit(value: number, serie: Serie) {
