@@ -67,12 +67,17 @@ class Serie {
     }
 }
 
+export function darkenColorRGB(color: Color, timesDarker: number): Color {
+    return color.map(colorChannel => Math.round(colorChannel / timesDarker)) as Color;
+}
+
 export class Plotter {
     private series: Serie[] = [];
     private plotLength = 0;
     private consoleColumns = process.stdout.columns;
 
     private plotPoint(serie: Serie, pointIndex: number, color: Color, offset: number) {
+        const darkerColor = darkenColorRGB(color, 4);
         const value = serie.points[pointIndex];
         const previousValue = serie.points[pointIndex - 1];
         process.stdout.cursorTo(offset);
@@ -86,17 +91,20 @@ export class Plotter {
         const normPreviousValue = this.scaleToFit(previousValue - serie.minValue, serie);
         const difference = normPreviousValue - normValue;
         if (difference > 0) {
-            process.stdout.moveCursor(normValue, 0);
+            process.stdout.write(chalk.rgb(...darkerColor)(`${'\u2219'.repeat(normValue)}`));
+            process.stdout.moveCursor(-1, 0);
             process.stdout.write(chalk.rgb(...color)(`\u250C${'\u2500'.repeat(difference)}`));
             process.stdout.moveCursor(-1, 0);
             process.stdout.write(chalk.rgb(...color)('\u2518'));
         } else if (difference < 0) {
-            process.stdout.moveCursor(normPreviousValue, 0);
+            process.stdout.write(chalk.rgb(...darkerColor)(`${'\u2219'.repeat(normPreviousValue)}`));
+            process.stdout.moveCursor(-1, 0);
             process.stdout.write(chalk.rgb(...color)(`\u2514${'\u2500'.repeat(-1 * difference)}`));
             process.stdout.moveCursor(-1, 0);
             process.stdout.write(chalk.rgb(...color)('\u2510'));
         } else {
-            process.stdout.moveCursor(normValue, 0);
+            process.stdout.write(chalk.rgb(...darkerColor)(`${'\u2219'.repeat(normValue)}`));
+            process.stdout.moveCursor(-1, 0);
             process.stdout.write(chalk.rgb(...color)(`\u2502`));
         }
     }
