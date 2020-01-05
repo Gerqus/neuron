@@ -1,5 +1,5 @@
 import { Connection } from './Connection.class';
-import { ActivationFunctionSchema } from './ActivationFunction.class';
+import { ActivationFunctionSchema } from '../libs/activationFunctions';
 
 export interface NeuronSchema {
     activationFunction: ActivationFunctionSchema;
@@ -17,6 +17,7 @@ export class Neuron {
     private bias: number;
     private learningFactor: number;
     private inputsSum: number;
+    private derivativeCalcResult: number;
 
     constructor({activationFunction, bias = Math.random() * 0.5, initialState = 0, learningFactor = 0.1}: NeuronSchema) {
         this.activationFunction = activationFunction;
@@ -42,7 +43,8 @@ export class Neuron {
     }
 
     public calculateDelta(): void {
-        this.delta = this.costsSum * this.activationDerivativeCalculation();
+        this.calculateActivationDerivative();
+        this.delta = this.costsSum * this.derivativeCalcResult;
     }
 
     public getDelta() {
@@ -53,13 +55,13 @@ export class Neuron {
         this.costsSum = 0;
     }
 
-    private activationDerivativeCalculation(): number {
-        return this.activationFunction.derivative(this.state);
+    private calculateActivationDerivative(): void {
+        this.derivativeCalcResult = this.activationFunction.derivative(this.getInputsWeightedSum() + this.bias);
     }
 
     public updateConnectionsWeights(): void {
         this.connections.forEach(connection => {
-            connection.weight += (this.learningFactor * Math.abs(this.costsSum)) * this.delta * connection.inputNeuron.state;
+            connection.weight += this.learningFactor * this.delta * connection.inputNeuron.state;
         });
     }
 

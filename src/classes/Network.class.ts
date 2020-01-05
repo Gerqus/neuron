@@ -1,7 +1,8 @@
 import { Layer } from './Layer.class';
-import { NeuronSchema, Neuron } from './Neuron.class';
+import { NeuronSchema } from './Neuron.class';
 import { LinkingFunctionSchema } from './LinkingFunction.class';
 import { getRandomElement, roundWithPrecision } from '../utils';
+import { ErrorFunctions } from '../libs/errorFunctions';
 import { getMeanNetworkError } from '../lab';
 
 interface ConnectionLog {
@@ -30,6 +31,7 @@ interface NetworkLog {
     output: number[];
     layers: LayerLog[];
     epochs: number;
+    generalError: number;
     error: number;
 }
 
@@ -141,7 +143,7 @@ export class Network {
         });
 
         this.getOutputLayer().getNeurons().forEach((outputNeuron, neuronIndex) => {
-            outputNeuron.increaseCostsSum(this.chosenTrainingSet.expected[neuronIndex] - outputNeuron.state);
+            outputNeuron.increaseCostsSum(ErrorFunctions.MSE.derivative(this.chosenTrainingSet.expected[neuronIndex], outputNeuron.state));
         });
 
         this.getWorkingLayers()
@@ -173,7 +175,7 @@ export class Network {
         this.run(testCase.inputs);
         return this.getOutputLayerValues().reduce(
             (sqSum, output, outputIndex) =>
-                sqSum + ((output - testCase.expected[outputIndex]) ** 2),
+                sqSum + ErrorFunctions.MSE(testCase.expected[outputIndex], output),
             0
         ) / testCase.expected.length;
     }
@@ -183,6 +185,7 @@ export class Network {
         const log: NetworkLog = {
             layers: [],
             epochs: this.epochsTrained,
+            generalError: getMeanNetworkError(this, this.trainingCases),
             error: this.getError(trainingData),
             output: this.getOutputLayerValues(),
         };
