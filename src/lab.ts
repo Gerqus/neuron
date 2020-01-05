@@ -147,7 +147,7 @@ export class Plotter {
     }
 
     public draw() {
-        console.clear();
+        // console.clear();
         for (let i = 0; i < this.plotLength; ++i) {
             this.plotLine(i);
         }
