@@ -1,7 +1,37 @@
 import { Layer } from './Layer.class';
-import { NeuronSchema } from './Neuron.class';
+import { NeuronSchema, Neuron } from './Neuron.class';
 import { LinkingFunctionSchema } from './LinkingFunction.class';
-import { getRandomElement } from '../utils';
+import { getRandomElement, roundWithPrecision } from '../utils';
+import { getMeanNetworkError } from '../lab';
+
+interface ConnectionLog {
+    weight: number;
+    state: number;
+}
+
+interface NeuronLog {
+    index: number;
+    state: number;
+    bias: number;
+    incomingConnections: ConnectionLog[];
+    inputsWeightedSum: number;
+    output: number;
+    costsSum: number;
+    activationDerivativeCalculation: number;
+    delta: number;
+}
+
+interface LayerLog {
+    layerIndex: number;
+    neurons: NeuronLog[];
+}
+
+interface NetworkLog {
+    output: number[];
+    layers: LayerLog[];
+    epochs: number;
+    error: number;
+}
 
 export interface NetworkSchema {
     inputLayer: NeuronSchema[];
@@ -147,31 +177,46 @@ export class Network {
             0
         ) / testCase.expected.length;
     }
-
     // Debug only
-    getLayersStatus(label: string): string[] {
-        const log: any[] = [];
-        log.push(`\n\n=== ${label}: ===`);
+    getNetworkStatus(trainingData: testData): NetworkLog {
+        this.run(trainingData.inputs);
+        const log: NetworkLog = {
+            layers: [],
+            epochs: this.epochsTrained,
+            error: this.getError(trainingData),
+            output: this.getOutputLayerValues(),
+        };
+
         this.layers.forEach((layer, layerIndex) => {
-            log.push(`\n  Layer ${layerIndex}:`);
+            const layerLog: LayerLog = {
+                layerIndex: layerIndex,
+                neurons: [],
+            };
             layer.getNeurons().forEach((neuron, neuronIndex) => {
-                const connectionsWeights = neuron.connections.map(
+                const connectionsWeights: ConnectionLog[] = neuron.connections.map(
                     (conn) =>
-                        `[weight: ${Math.round(conn.weight * 1_000_000) / 1_000_000}, state: ${conn.inputNeuron.state}]`
+                        ({
+                            weight: roundWithPrecision(conn.weight, 6),
+                            state: conn.inputNeuron.state,
+                        })
                 );
-                log.push(`   Neuron ${neuronIndex}:`);
-                log.push(`    state:${neuron.state}`);
-                log.push(`    bias:${neuron.getBias()}`);
-                log.push(`    incoming connections:`);
-            connectionsWeights.forEach((weight, i) =>
-                log.push((`     conn#${i}: ${weight}`))
-            );
-                log.push(`    inputsWeightedSum:${neuron.getInputsWeightedSum()}`);
-                log.push(`    output:${neuron.activationFunction(neuron.getInputsWeightedSum())}`);
-                log.push(`    costsSum:${neuron.getCostsSum()}`);
-                log.push(`    activationDerivativeCalculation:${neuron.getDelta() / neuron.getCostsSum()}`);
-                log.push(`    delta:${neuron.getDelta()}`);
+
+                const neuronLog: NeuronLog = {
+                    index: neuronIndex,
+                    state: neuron.state,
+                    bias: neuron.getBias(),
+                    incomingConnections: connectionsWeights,
+                    inputsWeightedSum: neuron.getInputsWeightedSum(),
+                    output: neuron.activationFunction(neuron.getInputsWeightedSum()),
+                    costsSum: neuron.getCostsSum(),
+                    activationDerivativeCalculation: neuron.getDelta() / neuron.getCostsSum(),
+                    delta: neuron.getDelta(),
+                };
+
+                layerLog.neurons[neuronIndex] = neuronLog;
             });
+
+            log.layers.push(layerLog);
         });
         return log;
     }

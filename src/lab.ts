@@ -2,6 +2,7 @@ import { Network } from './classes/Network.class';
 import * as chalk from 'chalk';
 import * as _ from 'lodash';
 import process = require('process');
+import { roundWithPrecision } from './utils';
 
 export function getMeanNetworkError(net: Network, testData: testData[]) {
     return testData.reduce(
@@ -28,17 +29,17 @@ export function showTrainingResults(network: Network): void {
 type Color = [number, number, number];
 
 class Serie {
-    public id: symbol;
+    public label: string;
     public color: Color = [255, 255, 255];
     public points: number[] = [];
     public offset = 0;
     public width = 0;
-    public maxValue = 0;
-    public minValue = 0;
+    public maxValue: number;
+    public minValue: number;
     private plotter: Plotter;
 
     constructor(plotterParent: Plotter, label?: string, color?: Color) {
-        this.id = Symbol(label ? label : '');
+        this.label = label ? label : '';
         this.color = color ? color : this.color;
         this.plotter = plotterParent;
     }
@@ -57,8 +58,8 @@ class Serie {
 
     public addPoint(value: number): void {
         this.points.push(value);
-        this.maxValue = value > this.maxValue ? value : this.maxValue;
-        this.minValue = value < this.minValue ? value : this.minValue;
+        this.maxValue = (value > this.maxValue || this.maxValue === undefined) && value.toString() !== 'NaN' ? value : this.maxValue;
+        this.minValue = (value < this.minValue || this.minValue === undefined) && value.toString() !== 'NaN' ? value : this.minValue;
         this.plotter.pointAdded(this.length);
     }
 
@@ -77,43 +78,54 @@ export class Plotter {
     private consoleColumns = process.stdout.columns;
     private liveMode = true;
 
-    private plotPoint(serie: Serie, pointIndex: number, color: Color, offset: number) {
-        const darkerColor = darkenColorRGB(color, 4);
-        const value = serie.points[pointIndex];
-        const previousValue = serie.points[pointIndex - 1];
-        process.stdout.cursorTo(offset);
+    private plotPoint(serie: Serie, lineIndex: number) {
+        const darkerColor = darkenColorRGB(serie.color, 4);
+        const value = serie.points[lineIndex];
+        const previousValue = serie.points[lineIndex - 1];
+        process.stdout.cursorTo(serie.offset);
         process.stdout.write('\u2502');
         if (value !== 0 && !value) {
             process.stdout.write('\u2219'.padStart(8, ' '));
             return;
         }
-        process.stdout.write((Math.round(value * 100) / 100).toString().padEnd(7, ' ').concat('\u2219'));
+        const valueLabel = roundWithPrecision(value, 3).toString().padEnd(7, ' ');
+        let formattedLabel: string;
+        if (value === serie.minValue) {
+            formattedLabel = chalk.rgb(...serie.color)('\u25bc'.concat(valueLabel));
+            process.stdout.moveCursor(-1, 0);
+        } else if (value === serie.maxValue) {
+            formattedLabel = chalk.rgb(...serie.color)('\u25b2'.concat(valueLabel));
+            process.stdout.moveCursor(-1, 0);
+        } else {
+            formattedLabel = valueLabel;
+        }
+        process.stdout.write(formattedLabel.concat('\u2219'));
         const normValue = this.scaleToFit(value - serie.minValue, serie);
         const normPreviousValue = this.scaleToFit(previousValue - serie.minValue, serie);
         const difference = normPreviousValue - normValue;
         if (difference > 0) {
             process.stdout.write(chalk.rgb(...darkerColor)(`${'\u2219'.repeat(normValue)}`));
             process.stdout.moveCursor(-1, 0);
-            process.stdout.write(chalk.rgb(...color)(`\u250C${'\u2500'.repeat(difference)}`));
+            process.stdout.write(chalk.rgb(...serie.color)(`\u250C${'\u2500'.repeat(difference)}`));
             process.stdout.moveCursor(-1, 0);
-            process.stdout.write(chalk.rgb(...color)('\u2518'));
+            process.stdout.write(chalk.rgb(...serie.color)('\u2518'));
         } else if (difference < 0) {
             process.stdout.write(chalk.rgb(...darkerColor)(`${'\u2219'.repeat(normPreviousValue)}`));
             process.stdout.moveCursor(-1, 0);
-            process.stdout.write(chalk.rgb(...color)(`\u2514${'\u2500'.repeat(-1 * difference)}`));
+            process.stdout.write(chalk.rgb(...serie.color)(`\u2514${'\u2500'.repeat(-1 * difference)}`));
             process.stdout.moveCursor(-1, 0);
-            process.stdout.write(chalk.rgb(...color)('\u2510'));
+            process.stdout.write(chalk.rgb(...serie.color)('\u2510'));
         } else {
             process.stdout.write(chalk.rgb(...darkerColor)(`${'\u2219'.repeat(normValue)}`));
             process.stdout.moveCursor(-1, 0);
-            process.stdout.write(chalk.rgb(...color)(`\u2502`));
+            process.stdout.write(chalk.rgb(...serie.color)(`\u2502`));
         }
     }
 
     private plotLine(linePointsIndex: number): void {
         _.orderBy(this.series, (serie) => serie.points[linePointsIndex], 'desc');
         this.series.forEach(serie => {
-            this.plotPoint(serie, linePointsIndex, serie.color, serie.offset);
+            this.plotPoint(serie, linePointsIndex);
         });
         process.stdout.write('\n');
     }
@@ -131,7 +143,15 @@ export class Plotter {
         });
     }
 
-    public addSerie(label?: string, color?: Color): Serie {
+    private drawLabelsAndStatsLine(): void {
+        this.series.forEach(serie => {
+            process.stdout.cursorTo(serie.offset);
+            process.stdout.write(chalk.rgb(...serie.color)(`${serie.label} <${roundWithPrecision(serie.minValue, 3)};${roundWithPrecision(serie.maxValue, 3)}>`));
+        });
+        process.stdout.write('\n');
+    }
+
+    public addSerie(color?: Color, label?: string, ): Serie {
         const newSerie = new Serie(this, label, color);
         this.series.push(newSerie);
         const seriesWidth = Math.floor(this.consoleColumns / this.series.length);
@@ -156,9 +176,11 @@ export class Plotter {
     }
 
     public draw() {
+        this.drawLabelsAndStatsLine();
         for (let i = 0; i < this.plotLength; ++i) {
             this.plotLine(i);
         }
+        this.drawLabelsAndStatsLine();
     }
 
     public toggleLiveMode(): void {
