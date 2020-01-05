@@ -75,6 +75,7 @@ export class Plotter {
     private series: Serie[] = [];
     private plotLength = 0;
     private consoleColumns = process.stdout.columns;
+    private liveMode = true;
 
     private plotPoint(serie: Serie, pointIndex: number, color: Color, offset: number) {
         const darkerColor = darkenColorRGB(color, 4);
@@ -121,6 +122,15 @@ export class Plotter {
         return Math.floor(value * ((serie.width - 10) / (serie.maxValue - serie.minValue)));
     }
 
+    private levelOutPlots(fillLastLine = false): void {
+        const mod = fillLastLine ? 0 : 1;
+        this.series.forEach(serie => {
+            while ((serie.length + mod) < this.plotLength) {
+                serie.points.push(undefined);
+            }
+        });
+    }
+
     public addSerie(label?: string, color?: Color): Serie {
         const newSerie = new Serie(this, label, color);
         this.series.push(newSerie);
@@ -138,18 +148,34 @@ export class Plotter {
     }
 
     public pointAdded(serieLength: number) {
-        this.series.forEach(serie => {
-            while (serie.length + 1 < serieLength) {
-                serie.addPoint(undefined);
-            }
-        });
         this.plotLength = this.plotLength >= serieLength ? this.plotLength : serieLength;
+        if (this.liveMode && this.plotLength == serieLength) {
+            this.levelOutPlots();
+        }
+        // this.plotLength = this.plotLength >= serieLength ? this.plotLength : serieLength;
     }
 
     public draw() {
-        // console.clear();
         for (let i = 0; i < this.plotLength; ++i) {
             this.plotLine(i);
         }
+    }
+
+    public toggleLiveMode(): void {
+        if (this.liveMode) {
+            this.liveModeOff();
+        } else {
+            this.liveModeOn();
+        }
+    }
+
+    public liveModeOn(): void {
+        this.liveMode = true;
+        this.levelOutPlots(true);
+    }
+
+    public liveModeOff(): void {
+        this.liveMode = false;
+        this.levelOutPlots(true);
     }
 }
