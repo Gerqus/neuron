@@ -14,6 +14,7 @@
   "devDependencies": {},
   "scripts": {
     "build_watch": "tsc --watch",
+    "build": "tsc",
     "start": "nodemon ./dist/main.js",
     "lint-fix": "tslint --fix --project ."
   },

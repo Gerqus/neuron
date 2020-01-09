@@ -7,6 +7,10 @@ export interface ActivationFunctionSchema {
     };
 }
 
+interface ActivationFunctionsLib {
+    [name: string]: ActivationFunctionSchema;
+}
+
 const sigmoid: ActivationFunctionSchema = function (x: number): number {
     return 1 / (1 + Math.exp(-x));
 };
@@ -103,7 +107,7 @@ cos.derivative = function(x: number): number {
 cos.toString = () => 'cos';
 
 
-export const ActivationFunctions = {
+export const ActivationFunctions: ActivationFunctionsLib = {
     sigmoid,
     bipolarSigmoid,
     bypass,

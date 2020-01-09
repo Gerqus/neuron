@@ -1,10 +1,10 @@
 import { Neuron, NeuronSchema } from './Neuron.class';
 
 export class Layer {
-    /*private*/ neurons: Neuron[];
+    /*private*/ neurons: Neuron[] = [];
 
-    constructor(layerSchema: NeuronSchema[]) {
-        this.neurons = layerSchema.map(schema => new Neuron(schema));
+    constructor(layerSchema: NeuronSchema[], layerIndex: number) {
+        this.neurons = layerSchema.map(neuronSchema => new Neuron(neuronSchema, {layerIndex, neuronIndex: this.neurons.length }));
     }
 
     public getNeurons(): Neuron[] {
@@ -15,7 +15,7 @@ export class Layer {
         if (this.getNeuronsCount() !== inputNeuronValues.length) {
             throw new Error('Input data points count doesn\'t match input neurons count. Terminating...');
         }
-        this.neurons.forEach((neuron, neuronIndex) => neuron.state = inputNeuronValues[neuronIndex]);
+        this.neurons.forEach((neuron, neuronIndex) => neuron.setState(inputNeuronValues[neuronIndex]));
     }
 
     public getNeuronsCount(): number {

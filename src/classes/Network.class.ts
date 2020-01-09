@@ -4,6 +4,7 @@ import { LinkingFunctionSchema } from './LinkingFunction.class';
 import { getRandomElement, roundWithPrecision } from '../utils';
 import { ErrorFunctions } from '../libs/errorFunctions';
 import { getMeanNetworkError } from '../lab';
+import { ActivationFunctions } from '../libs/activationFunctions';
 
 interface ConnectionLog {
     weight: number;
@@ -53,18 +54,18 @@ export class Network {
             throw new Error('Network must have input and output layers. Terminating...');
         }
 
-        this.addLayer(new Layer(schema.inputLayer));
+        this.addLayer(new Layer(schema.inputLayer, this.layers.length));
         if (schema.hiddenLayers) {
             schema.hiddenLayers.forEach((layerSchema) => {
-                this.addLayer(new Layer(layerSchema));
+                this.addLayer(new Layer(layerSchema, this.layers.length));
             });
         }
-        this.addLayer(new Layer(schema.outputLayer));
+        this.addLayer(new Layer(schema.outputLayer, this.layers.length));
     }
 
     public interlinkNeurons(linkingFunction?: LinkingFunctionSchema): void {
         if (linkingFunction) {
-            linkingFunction(this.getWorkingLayers());
+            linkingFunction(this.getLayers());
         } else {
             this.getWorkingLayers().forEach(
                 (currentLayer, previousLayerIndex) => { // previousLayerIndex: hidden layers ommit input layer, indexes are shifted by one
@@ -143,7 +144,10 @@ export class Network {
         });
 
         this.getOutputLayer().getNeurons().forEach((outputNeuron, neuronIndex) => {
-            outputNeuron.increaseCostsSum(ErrorFunctions.MSE.derivative(this.chosenTrainingSet.expected[neuronIndex], outputNeuron.state));
+            outputNeuron.increaseCostsSum(ErrorFunctions.MSE.derivative(
+                this.chosenTrainingSet.expected[neuronIndex],
+                outputNeuron.getState()
+            ));
         });
 
         this.getWorkingLayers()
@@ -151,7 +155,7 @@ export class Network {
             .forEach((currentLayer, layerIndex) => {
                 currentLayer.getNeurons().forEach((neuron) => {
                     neuron.calculateDelta();
-                    neuron.connections.forEach(connection => {
+                    neuron.getConnections().forEach(connection => {
                         connection.inputNeuron.increaseCostsSum(connection.weight * neuron.getDelta());
                     });
                 });
@@ -168,7 +172,7 @@ export class Network {
     }
 
     public getOutputLayerValues(): number[] {
-        return this.getOutputLayer().getNeurons().map(neuron => neuron.state);
+        return this.getOutputLayer().getNeurons().map(neuron => neuron.getState());
     }
 
     public getError(testCase: testData): number {
@@ -196,21 +200,21 @@ export class Network {
                 neurons: [],
             };
             layer.getNeurons().forEach((neuron, neuronIndex) => {
-                const connectionsWeights: ConnectionLog[] = neuron.connections.map(
+                const connectionsWeights: ConnectionLog[] = neuron.getConnections().map(
                     (conn) =>
                         ({
                             weight: roundWithPrecision(conn.weight, 6),
-                            state: conn.inputNeuron.state,
+                            state: conn.inputNeuron.getState(),
                         })
                 );
 
                 const neuronLog: NeuronLog = {
                     index: neuronIndex,
-                    state: neuron.state,
+                    state: neuron.getState(),
                     bias: neuron.getBias(),
                     incomingConnections: connectionsWeights,
                     inputsWeightedSum: neuron.getInputsWeightedSum(),
-                    output: neuron.activationFunction(neuron.getInputsWeightedSum()),
+                    output: ActivationFunctions[neuron.getActivationFunctionName()](neuron.getInputsWeightedSum()),
                     costsSum: neuron.getCostsSum(),
                     activationDerivativeCalculation: neuron.getDelta() / neuron.getCostsSum(),
                     delta: neuron.getDelta(),
@@ -250,6 +254,10 @@ export class Network {
 
     private getWorkingLayers(): WorkingLayers {
         return this.layers.slice(1, this.layers.length);
+    }
+
+    private getLayers(): Layer[] {
+        return this.layers;
     }
 
     private setInputLayerValues(inputData: number[]): void {

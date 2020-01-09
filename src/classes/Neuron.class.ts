@@ -1,34 +1,49 @@
 import { Connection } from './Connection.class';
 import { ActivationFunctionSchema } from '../libs/activationFunctions';
 
+interface NeuronCoordinates {
+    layerIndex: number;
+    neuronIndex: number;
+}
+
 export interface NeuronSchema {
     activationFunction: ActivationFunctionSchema;
     bias?: number;
     initialState?: number;
     learningFactor?: number;
+    name?: string;
 }
 
 export class Neuron {
-    public connections: Connection[];
-    activationFunction: ActivationFunctionSchema;
-    state: number;
-    private costsSum: number;
-    private delta: number;
+    private connections: Connection[] = [];
+    private activationFunction: ActivationFunctionSchema;
+    private state: number;
+    private costsSum = 0;
+    private delta = 0;
+    private inputsSum = 0;
     private bias: number;
     private learningFactor: number;
-    private inputsSum: number;
     private derivativeCalcResult: number;
+    private name: string;
+    private coordinates: NeuronCoordinates;
 
-    constructor({activationFunction, bias = Math.random() * 0.5, initialState = 0, learningFactor = 0.1}: NeuronSchema) {
+    constructor(
+        {
+            activationFunction,
+            bias = Math.random() * 0.5,
+            initialState = 0,
+            learningFactor = 0.1,
+            name,
+        }: NeuronSchema,
+        coordinates: NeuronCoordinates
+    ) {
+        console.log(JSON.stringify(coordinates));
         this.activationFunction = activationFunction;
         this.bias = bias;
         this.state = initialState;
         this.learningFactor = learningFactor;
-
-        this.connections = [];
-        this.costsSum = 0;
-        this.delta = 0;
-        this.inputsSum = 0;
+        this.name = name;
+        this.coordinates = coordinates;
     }
 
     connect(inputNeuron: Neuron, weight: number = 1): void {
@@ -87,5 +102,25 @@ export class Neuron {
 
     public getCostsSum(): number {
         return this.costsSum;
+    }
+
+    public getName(): string {
+        return this.name;
+    }
+
+    public getConnections(): Connection[] {
+        return this.connections;
+    }
+
+    public getState(): number {
+        return this.state;
+    }
+
+    public setState(state: number): void {
+        this.state = state;
+    }
+
+    public getActivationFunctionName(): string {
+        return this.activationFunction.name;
     }
 }
