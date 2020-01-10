@@ -10,10 +10,10 @@ const networkSchema: NetworkSchema = {
     hiddenLayers: [
         [
             {
-                activationFunction: ActivationFunctions.sigmoid,
+                activationFunction: ActivationFunctions.ReLU,
             },
             {
-                activationFunction: ActivationFunctions.sigmoid,
+                activationFunction: ActivationFunctions.ReLU,
             },
         ],
     ],

@@ -51,6 +51,7 @@ PlotterInst.draw();
 showTrainingResults(XORNetwork);
 
 console.log('\n=============================================\n');
+console.log(JSON.parse(XORNetwork.dumpNetworkToSchema()));
 
 // const serieBar = PlotterInst.addSerie('Bar', [190, 110, 20]);
 // const serieBaz = PlotterInst.addSerie('Baz', [190, 20, 90]);

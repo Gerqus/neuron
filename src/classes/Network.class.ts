@@ -40,7 +40,10 @@ export interface NetworkSchema {
     inputLayer: NeuronSchema[];
     hiddenLayers?: NeuronSchema[][];
     outputLayer:  NeuronSchema[];
+    epochsTrained?: number;
+    trainingCases?: testData[];
 }
+
 export type WorkingLayers = Layer[];
 
 export class Network {
@@ -61,6 +64,9 @@ export class Network {
             });
         }
         this.addLayer(new Layer(schema.outputLayer, this.layers.length));
+
+        this.epochsTrained = schema.epochsTrained ? schema.epochsTrained : 0;
+        this.trainingCases = schema.trainingCases ? schema.trainingCases : [];
     }
 
     public interlinkNeurons(linkingFunction?: LinkingFunctionSchema): void {
@@ -70,7 +76,7 @@ export class Network {
             this.getWorkingLayers().forEach(
                 (currentLayer, previousLayerIndex) => { // previousLayerIndex: hidden layers ommit input layer, indexes are shifted by one
                     const previousLayer = this.layers[previousLayerIndex];
-                    currentLayer.neurons.forEach((currentNeuron) => {
+                    currentLayer.getNeurons().forEach((currentNeuron) => {
                         previousLayer.getNeurons().forEach((inputNeuron) => {
                             currentNeuron.connect(inputNeuron, Math.random());
                         });
@@ -83,12 +89,12 @@ export class Network {
     public setTrainingCases(trainingCases: testData[]): void {
         let errorFound = false;
         trainingCases.forEach((testCase, testCaseIndex) => {
-            if (testCase.inputs.length !== this.getInputLayer().neurons.length) {
-                console.error(`Expected network inputs for test case #${testCaseIndex} count doesn\'t match input neurons count (${testCase.expected.length} !== ${this.getOutputLayer().neurons.length}). Terminating...`);
+            if (testCase.inputs.length !== this.getInputLayer().getNeuronsCount()) {
+                console.error(`Expected network inputs for test case #${testCaseIndex} count doesn\'t match input neurons count (${testCase.expected.length} !== ${this.getOutputLayer().getNeuronsCount()}). Terminating...`);
                 errorFound = true;
             }
-            if (testCase.expected.length !== this.getOutputLayer().neurons.length) {
-                console.error(`Expected network outputs for test case #${testCaseIndex} count doesn\'t match output neurons count (${testCase.expected.length} !== ${this.getOutputLayer().neurons.length}). Terminating...`);
+            if (testCase.expected.length !== this.getOutputLayer().getNeuronsCount()) {
+                console.error(`Expected network outputs for test case #${testCaseIndex} count doesn\'t match output neurons count (${testCase.expected.length} !== ${this.getOutputLayer().getNeuronsCount()}). Terminating...`);
                 errorFound = true;
             }
         });
@@ -183,7 +189,7 @@ export class Network {
             0
         ) / testCase.expected.length;
     }
-    // Debug only
+
     getNetworkStatus(trainingData: testData): NetworkLog {
         this.run(trainingData.inputs);
         const log: NetworkLog = {
@@ -232,6 +238,17 @@ export class Network {
         return this.epochsTrained;
     }
 
+    public dumpNetworkToSchema(): string {
+        const network = {
+            inputLayer: this.getInputLayer(),
+            hiddenLayers: this.getHiddenLayers(),
+            outputLayer:  this.getOutputLayer(),
+            epochsTrained: this.epochsTrained,
+            trainingCases: this.trainingCases,
+        };
+        return JSON.stringify(network);
+    }
+
     private addLayer(layer: Layer): void {
         this.layers.push(layer);
     }
@@ -246,6 +263,10 @@ export class Network {
 
     private getInputLayer(): Layer {
         return this.layers[0];
+    }
+
+    private getHiddenLayers(): Layer[] {
+        return this.layers.slice(1, this.layers.length - 1);
     }
 
     private getOutputLayer(): Layer {

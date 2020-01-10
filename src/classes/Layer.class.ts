@@ -1,7 +1,7 @@
 import { Neuron, NeuronSchema } from './Neuron.class';
 
 export class Layer {
-    /*private*/ neurons: Neuron[] = [];
+    private neurons: Neuron[] = [];
 
     constructor(layerSchema: NeuronSchema[], layerIndex: number) {
         this.neurons = layerSchema.map(neuronSchema => new Neuron(neuronSchema, {layerIndex, neuronIndex: this.neurons.length }));
