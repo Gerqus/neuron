@@ -1,12 +1,11 @@
-import { XORNetworkSchema, XORTrainDataset } from './xor';
+import { XORNetworkSchema, XORTrainDataset } from './networks/xor';
 import { getMeanNetworkError, showTrainingResults, Plotter, darkenColorRGB } from './lab';
 import { Network } from './classes/Network.class';
 
 const epochs = 300;
-const times = 1000;
+const times = 100;
 
 const XORNetwork = new Network(XORNetworkSchema);
-XORNetwork.interlinkNeurons();
 XORNetwork.setTrainingCases(XORTrainDataset);
 
 showTrainingResults(XORNetwork);
@@ -33,7 +32,7 @@ outputNeuronInput.addPoint(log1.layers[log1.layers.length - 1].neurons[0].inputs
 errorPlot.addPoint(log1.generalError);
 
 for (let i = 0; i < times; ++i) {
-    XORNetwork.train(epochs, (net) => getMeanNetworkError(net, XORTrainDataset) < 0.1);
+    XORNetwork.train(epochs, (net) => getMeanNetworkError(net, XORTrainDataset) < 0.001);
 
     const log = XORNetwork.getNetworkStatus(XORTrainDataset[testToLogFor]);
     output.addPoint(log.output[0]);
@@ -51,7 +50,6 @@ PlotterInst.draw();
 showTrainingResults(XORNetwork);
 
 console.log('\n=============================================\n');
-console.log(JSON.parse(XORNetwork.dumpNetworkToSchema()));
 
 // const serieBar = PlotterInst.addSerie('Bar', [190, 110, 20]);
 // const serieBaz = PlotterInst.addSerie('Baz', [190, 20, 90]);

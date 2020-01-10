@@ -4,7 +4,7 @@ import { NeuronsLib } from '../libs/neurons';
 
 const networkSchema: NetworkSchema = {
     inputLayer: [
-        NeuronsLib.InputNeuron,
+        NeuronsLib.InputNeuron('a'),
     ],
     outputLayer: [
         {

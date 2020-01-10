@@ -4,22 +4,31 @@ import { NeuronsLib } from '../libs/neurons';
 
 const networkSchema: NetworkSchema = {
     inputLayer: [
-        NeuronsLib.InputNeuron,
-        NeuronsLib.InputNeuron,
+        NeuronsLib.InputNeuron('a'),
+        NeuronsLib.InputNeuron('b'),
     ],
     hiddenLayers: [
         [
             {
-                activationFunction: ActivationFunctions.ReLU,
+                activationFunction: ActivationFunctions.sigmoid,
+                name: 'h1',
+                incomingConnectionsNames: ['a', 'b'],
+                learningFactor: 1,
             },
             {
-                activationFunction: ActivationFunctions.ReLU,
+                activationFunction: ActivationFunctions.sigmoid,
+                name: 'h2',
+                incomingConnectionsNames: ['a', 'b'],
+                learningFactor: 1,
             },
         ],
     ],
     outputLayer: [
         {
             activationFunction: ActivationFunctions.sigmoid,
+            name: 'output',
+            incomingConnectionsNames: ['h1', 'h2'],
+            learningFactor: 1,
         },
     ],
 };

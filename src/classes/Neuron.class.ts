@@ -1,17 +1,13 @@
 import { Connection } from './Connection.class';
 import { ActivationFunctionSchema } from '../libs/activationFunctions';
 
-interface NeuronCoordinates {
-    layerIndex: number;
-    neuronIndex: number;
-}
-
 export interface NeuronSchema {
     activationFunction: ActivationFunctionSchema;
     bias?: number;
     initialState?: number;
     learningFactor?: number;
     name?: string;
+    incomingConnectionsNames?: string[];
 }
 
 export class Neuron {
@@ -25,7 +21,6 @@ export class Neuron {
     private learningFactor: number;
     private derivativeCalcResult: number;
     private name: string;
-    private coordinates: NeuronCoordinates;
 
     constructor(
         {
@@ -34,16 +29,13 @@ export class Neuron {
             initialState = 0,
             learningFactor = 0.1,
             name,
-        }: NeuronSchema,
-        coordinates: NeuronCoordinates
+        }: NeuronSchema
     ) {
-        console.log(JSON.stringify(coordinates));
         this.activationFunction = activationFunction;
         this.bias = bias;
         this.state = initialState;
         this.learningFactor = learningFactor;
         this.name = name;
-        this.coordinates = coordinates;
     }
 
     connect(inputNeuron: Neuron, weight: number = 1): void {

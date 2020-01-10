@@ -1,10 +1,11 @@
 import { Layer } from './Layer.class';
-import { NeuronSchema } from './Neuron.class';
+import { NeuronSchema, Neuron } from './Neuron.class';
 import { LinkingFunctionSchema } from './LinkingFunction.class';
 import { getRandomElement, roundWithPrecision } from '../utils';
 import { ErrorFunctions } from '../libs/errorFunctions';
 import { getMeanNetworkError } from '../lab';
-import { ActivationFunctions } from '../libs/activationFunctions';
+import { ActivationFunctions, ActivationFunctionSchema } from '../libs/activationFunctions';
+import * as _ from 'lodash';
 
 interface ConnectionLog {
     weight: number;
@@ -44,6 +45,10 @@ export interface NetworkSchema {
     trainingCases?: testData[];
 }
 
+interface IndexedNeurons {
+    [name: string]: Neuron;
+}
+
 export type WorkingLayers = Layer[];
 
 export class Network {
@@ -51,38 +56,66 @@ export class Network {
     private chosenTrainingSet: testData;
     private trainingCases: testData[];
     private epochsTrained = 0;
+    private indexedNeurons: IndexedNeurons = {};
 
-    constructor(schema: NetworkSchema) {
+    constructor(schema: NetworkSchema, linkingFunction?: LinkingFunctionSchema) {
         if (!schema.inputLayer || !schema.outputLayer) {
             throw new Error('Network must have input and output layers. Terminating...');
         }
+        if (!schema.inputLayer.length || !schema.outputLayer.length || _.some(schema.hiddenLayers, (layer) => layer.length === 0)) {
+            throw new Error('All declared layers must have neurons. Terminating...');
+        }
 
-        this.addLayer(new Layer(schema.inputLayer, this.layers.length));
+        const neuronsSchemas: NeuronSchema[] = [];
+
+        this.addLayer(new Layer(schema.inputLayer));
+        neuronsSchemas.push(...schema.inputLayer);
         if (schema.hiddenLayers) {
             schema.hiddenLayers.forEach((layerSchema) => {
-                this.addLayer(new Layer(layerSchema, this.layers.length));
+                this.addLayer(new Layer(layerSchema));
+                neuronsSchemas.push(...layerSchema);
             });
         }
-        this.addLayer(new Layer(schema.outputLayer, this.layers.length));
+        this.addLayer(new Layer(schema.outputLayer));
+        neuronsSchemas.push(...schema.outputLayer);
 
         this.epochsTrained = schema.epochsTrained ? schema.epochsTrained : 0;
         this.trainingCases = schema.trainingCases ? schema.trainingCases : [];
+
+        const createdNeurons = this.layers.reduce(
+            (neurons: Neuron[], layer) =>
+                neurons.concat(layer.getNeurons()),
+            []
+        );
+
+        this.interlinkNeurons(createdNeurons, neuronsSchemas, linkingFunction);
     }
 
-    public interlinkNeurons(linkingFunction?: LinkingFunctionSchema): void {
+    private interlinkNeurons(neurons: Neuron[], neuronsSchemas: NeuronSchema[], linkingFunction?: LinkingFunctionSchema): void {
         if (linkingFunction) {
             linkingFunction(this.getLayers());
         } else {
-            this.getWorkingLayers().forEach(
-                (currentLayer, previousLayerIndex) => { // previousLayerIndex: hidden layers ommit input layer, indexes are shifted by one
-                    const previousLayer = this.layers[previousLayerIndex];
-                    currentLayer.getNeurons().forEach((currentNeuron) => {
-                        previousLayer.getNeurons().forEach((inputNeuron) => {
-                            currentNeuron.connect(inputNeuron, Math.random());
-                        });
+            neurons.forEach((neuron) => {
+                const neuronName = neuron.getName();
+
+                if (!neuronName) {
+                    return;
+                }
+
+                if (neuronName in this.indexedNeurons) {
+                    throw new Error(`Duplicated neuron name "${neuronName}". Terminating...`);
+                }
+
+                this.indexedNeurons[neuronName] = neuron;
+            });
+
+            neuronsSchemas.forEach((neuronSchema) => {
+                if (neuronSchema.incomingConnectionsNames) {
+                    neuronSchema.incomingConnectionsNames.forEach((incomingConnectionName) => {
+                        this.indexedNeurons[neuronSchema.name].connect(this.indexedNeurons[incomingConnectionName]);
                     });
                 }
-            );
+            });
         }
     }
 
@@ -220,7 +253,7 @@ export class Network {
                     bias: neuron.getBias(),
                     incomingConnections: connectionsWeights,
                     inputsWeightedSum: neuron.getInputsWeightedSum(),
-                    output: ActivationFunctions[neuron.getActivationFunctionName()](neuron.getInputsWeightedSum()),
+                    output: (ActivationFunctions[neuron.getActivationFunctionName()])(neuron.getInputsWeightedSum()),
                     costsSum: neuron.getCostsSum(),
                     activationDerivativeCalculation: neuron.getDelta() / neuron.getCostsSum(),
                     delta: neuron.getDelta(),
