@@ -1,36 +1,51 @@
 import { NetworkSchema } from '../classes/Network.class';
-import { ActivationFunctions } from '../libs/activationFunctions';
+import { ActivationFunctionsNames } from '../libs/activationFunctions';
 import { NeuronsLib } from '../libs/neurons';
 
 const networkSchema: NetworkSchema = {
-    inputLayer: [
-        NeuronsLib.InputNeuron('a'),
-        NeuronsLib.InputNeuron('b'),
-    ],
+    inputLayer: {
+        neurons: [
+            NeuronsLib.InputNeuron('a'),
+            NeuronsLib.InputNeuron('b'),
+        ],
+    },
     hiddenLayers: [
-        [
+        {
+            neurons: [
+                {
+                    activationFunctionName: ActivationFunctionsNames.bipolarSigmoid,
+                    name: 'h1',
+                    incomingConnectionsSchemas: [
+                        { inputNeuronName: 'a' },
+                        { inputNeuronName: 'b' },
+                    ],
+                    learningFactor: 1,
+                },
+                {
+                    activationFunctionName: ActivationFunctionsNames.ReLU,
+                    name: 'h2',
+                    incomingConnectionsSchemas: [
+                        { inputNeuronName: 'a' },
+                        { inputNeuronName: 'b' },
+                    ],
+                    learningFactor: 1,
+                },
+            ],
+        },
+    ],
+    outputLayer: {
+        neurons: [
             {
-                activationFunction: ActivationFunctions.sigmoid,
-                name: 'h1',
-                incomingConnectionsNames: ['a', 'b'],
-                learningFactor: 1,
-            },
-            {
-                activationFunction: ActivationFunctions.sigmoid,
-                name: 'h2',
-                incomingConnectionsNames: ['a', 'b'],
+                activationFunctionName: ActivationFunctionsNames.sigmoid,
+                name: 'output',
+                incomingConnectionsSchemas: [
+                    { inputNeuronName: 'h1' },
+                    { inputNeuronName: 'h2' },
+                ],
                 learningFactor: 1,
             },
         ],
-    ],
-    outputLayer: [
-        {
-            activationFunction: ActivationFunctions.sigmoid,
-            name: 'output',
-            incomingConnectionsNames: ['h1', 'h2'],
-            learningFactor: 1,
-        },
-    ],
+    },
 };
 
 const trainDataset: testData[] = [

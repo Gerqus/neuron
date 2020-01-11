@@ -1,10 +1,14 @@
 import { Neuron, NeuronSchema } from './Neuron.class';
 
+export interface LayerSchema {
+    neurons: NeuronSchema[];
+}
+
 export class Layer {
     private neurons: Neuron[] = [];
 
-    constructor(layerSchema: NeuronSchema[]) {
-        this.neurons = layerSchema.map(neuronSchema => new Neuron(neuronSchema));
+    constructor(layerSchema: LayerSchema) {
+        this.neurons = layerSchema.neurons.map(neuronSchema => new Neuron(neuronSchema));
     }
 
     public getNeurons(): Neuron[] {
@@ -24,5 +28,11 @@ export class Layer {
 
     public activateNeurons(): void {
         this.neurons.forEach(neuron => neuron.activate());
+    }
+
+    public saveLayerToSchema(): LayerSchema {
+        return {
+            neurons: this.neurons.map(neuron => neuron.saveNauronToSchema()),
+        };
     }
 }

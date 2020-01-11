@@ -17,7 +17,7 @@ const sigmoid: ActivationFunctionSchema = function (x: number): number {
 sigmoid.derivative = function (x: number) {
     return Math.exp(-x) / (1 + Math.exp(-x)) ** 2;
 };
-sigmoid.toString = () => 'sigmoid';
+sigmoid.toString = () => ActivationFunctionsNames.sigmoid;
 
 
 const bipolarSigmoid: ActivationFunctionSchema = function(x: number): number {
@@ -26,7 +26,7 @@ const bipolarSigmoid: ActivationFunctionSchema = function(x: number): number {
 bipolarSigmoid.derivative = (x: number) => {
     return 2 * Math.exp(x) / ((Math.exp(x) + 1) ** 2);
 };
-bipolarSigmoid.toString = () => 'bipolarSigmoid';
+bipolarSigmoid.toString = () => ActivationFunctionsNames.bipolarSigmoid;
 
 
 const bypass: ActivationFunctionSchema = function(x: number): number {
@@ -35,7 +35,7 @@ const bypass: ActivationFunctionSchema = function(x: number): number {
 bypass.derivative = function () {
     return 1;
 };
-bypass.toString = () => 'bypass';
+bypass.toString = () => ActivationFunctionsNames.bypass;
 
 
 const ELU: ActivationFunctionSchema = function(x: number): number {
@@ -47,7 +47,7 @@ ELU.derivative = function(x: number): number {
 ELU.params = {
     alpha: 0.01,
 };
-ELU.toString = () => 'ELU';
+ELU.toString = () => ActivationFunctionsNames.ELU;
 
 
 const ReLU: ActivationFunctionSchema = function(x: number): number {
@@ -56,7 +56,7 @@ const ReLU: ActivationFunctionSchema = function(x: number): number {
 ReLU.derivative = function(x: number): number {
     return x >= 0 ? 1 : 0;
 };
-ReLU.toString = () => 'ReLU';
+ReLU.toString = () => ActivationFunctionsNames.ReLU;
 
 
 const swish: ActivationFunctionSchema = function(x: number): number {
@@ -68,7 +68,7 @@ swish.derivative = function(x: number): number {
 swish.params = {
     beta: 1,
 };
-swish.toString = () => 'swish';
+swish.toString = () => ActivationFunctionsNames.swish;
 
 
 const square: ActivationFunctionSchema = function(x: number): number {
@@ -77,7 +77,7 @@ const square: ActivationFunctionSchema = function(x: number): number {
 square.derivative = function(x: number): number {
     return 2 * x;
 };
-square.toString = () => 'square';
+square.toString = () => ActivationFunctionsNames.square;
 
 
 const cube: ActivationFunctionSchema = function(x: number): number {
@@ -86,7 +86,7 @@ const cube: ActivationFunctionSchema = function(x: number): number {
 cube.derivative = function(x: number): number {
     return 3 * x ** 2;
 };
-cube.toString = () => 'cube';
+cube.toString = () => ActivationFunctionsNames.cube;
 
 
 const sin: ActivationFunctionSchema = function(x: number): number {
@@ -95,7 +95,7 @@ const sin: ActivationFunctionSchema = function(x: number): number {
 sin.derivative = function(x: number): number {
     return -1 * Math.cos(x);
 };
-sin.toString = () => 'sin';
+sin.toString = () => ActivationFunctionsNames.sin;
 
 
 const cos: ActivationFunctionSchema = function(x: number): number {
@@ -104,8 +104,20 @@ const cos: ActivationFunctionSchema = function(x: number): number {
 cos.derivative = function(x: number): number {
     return -1 * Math.sin(x);
 };
-cos.toString = () => 'cos';
+cos.toString = () => ActivationFunctionsNames.cos;
 
+export enum ActivationFunctionsNames {
+    sigmoid = 'sigmoid',
+    bipolarSigmoid = 'bipolarSigmoid',
+    bypass = 'bypass',
+    ELU = 'ELU',
+    ReLU = 'ReLU',
+    swish = 'swish',
+    square = 'square',
+    cube = 'cube',
+    sin = 'sin',
+    cos = 'cos',
+}
 
 export const ActivationFunctions: ActivationFunctionsLib = {
     sigmoid,

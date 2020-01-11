@@ -9,6 +9,7 @@ const XORNetwork = new Network(XORNetworkSchema);
 XORNetwork.setTrainingCases(XORTrainDataset);
 
 showTrainingResults(XORNetwork);
+const untrainedXor = XORNetwork.saveNetworkToSchema();
 console.log('\n');
 
 const PlotterInst = new Plotter();

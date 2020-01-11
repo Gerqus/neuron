@@ -1,13 +1,13 @@
-import { Connection } from './Connection.class';
-import { ActivationFunctionSchema } from '../libs/activationFunctions';
+import { Connection, ConnectionSchema } from './Connection.class';
+import { ActivationFunctionSchema, ActivationFunctions } from '../libs/activationFunctions';
 
 export interface NeuronSchema {
-    activationFunction: ActivationFunctionSchema;
+    activationFunctionName: string;
     bias?: number;
     initialState?: number;
     learningFactor?: number;
     name?: string;
-    incomingConnectionsNames?: string[];
+    incomingConnectionsSchemas?: ConnectionSchema[];
 }
 
 export class Neuron {
@@ -24,14 +24,16 @@ export class Neuron {
 
     constructor(
         {
-            activationFunction,
             bias = Math.random() * 0.5,
             initialState = 0,
             learningFactor = 0.1,
             name,
+            activationFunctionName,
         }: NeuronSchema
     ) {
-        this.activationFunction = activationFunction;
+        console.log(bias, initialState, learningFactor, name, activationFunctionName);
+
+        this.activationFunction = ActivationFunctions[activationFunctionName];
         this.bias = bias;
         this.state = initialState;
         this.learningFactor = learningFactor;
@@ -114,5 +116,22 @@ export class Neuron {
 
     public getActivationFunctionName(): string {
         return this.activationFunction.name;
+    }
+
+    public getLearningFactor(): number {
+        return this.learningFactor;
+    }
+
+    public saveNauronToSchema(): NeuronSchema {
+        return {
+            activationFunctionName: this.activationFunction.toString(),
+            bias: this.bias,
+            learningFactor: this.learningFactor,
+            name: this.name,
+            incomingConnectionsSchemas: this.connections.map(conn => ({
+                inputNeuronName: conn.inputNeuron.getName(),
+                weight: conn.weight,
+            })),
+        };
     }
 }

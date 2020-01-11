@@ -1,4 +1,4 @@
-import { Layer } from './Layer.class';
+import { Layer, LayerSchema } from './Layer.class';
 import { NeuronSchema, Neuron } from './Neuron.class';
 import { LinkingFunctionSchema } from './LinkingFunction.class';
 import { getRandomElement, roundWithPrecision } from '../utils';
@@ -38,9 +38,9 @@ interface NetworkLog {
 }
 
 export interface NetworkSchema {
-    inputLayer: NeuronSchema[];
-    hiddenLayers?: NeuronSchema[][];
-    outputLayer:  NeuronSchema[];
+    inputLayer: LayerSchema;
+    hiddenLayers?: LayerSchema[];
+    outputLayer:  LayerSchema;
     epochsTrained?: number;
     trainingCases?: testData[];
 }
@@ -62,22 +62,26 @@ export class Network {
         if (!schema.inputLayer || !schema.outputLayer) {
             throw new Error('Network must have input and output layers. Terminating...');
         }
-        if (!schema.inputLayer.length || !schema.outputLayer.length || _.some(schema.hiddenLayers, (layer) => layer.length === 0)) {
+        if (
+            !schema.inputLayer.neurons.length ||
+            !schema.outputLayer.neurons.length ||
+            _.some(schema.hiddenLayers, (layer) => layer.neurons.length === 0)
+        ) {
             throw new Error('All declared layers must have neurons. Terminating...');
         }
 
         const neuronsSchemas: NeuronSchema[] = [];
 
         this.addLayer(new Layer(schema.inputLayer));
-        neuronsSchemas.push(...schema.inputLayer);
+        neuronsSchemas.push(...schema.inputLayer.neurons);
         if (schema.hiddenLayers) {
             schema.hiddenLayers.forEach((layerSchema) => {
                 this.addLayer(new Layer(layerSchema));
-                neuronsSchemas.push(...layerSchema);
+                neuronsSchemas.push(...layerSchema.neurons);
             });
         }
         this.addLayer(new Layer(schema.outputLayer));
-        neuronsSchemas.push(...schema.outputLayer);
+        neuronsSchemas.push(...schema.outputLayer.neurons);
 
         this.epochsTrained = schema.epochsTrained ? schema.epochsTrained : 0;
         this.trainingCases = schema.trainingCases ? schema.trainingCases : [];
@@ -110,9 +114,12 @@ export class Network {
             });
 
             neuronsSchemas.forEach((neuronSchema) => {
-                if (neuronSchema.incomingConnectionsNames) {
-                    neuronSchema.incomingConnectionsNames.forEach((incomingConnectionName) => {
-                        this.indexedNeurons[neuronSchema.name].connect(this.indexedNeurons[incomingConnectionName]);
+                if (neuronSchema.incomingConnectionsSchemas) {
+                    neuronSchema.incomingConnectionsSchemas.forEach((incomingConnection) => {
+                        this.indexedNeurons[neuronSchema.name].connect(
+                            this.indexedNeurons[incomingConnection.inputNeuronName],
+                            incomingConnection.weight
+                        );
                     });
                 }
             });
@@ -271,11 +278,11 @@ export class Network {
         return this.epochsTrained;
     }
 
-    public dumpNetworkToSchema(): string {
+    public saveNetworkToSchema(): string {
         const network = {
-            inputLayer: this.getInputLayer(),
-            hiddenLayers: this.getHiddenLayers(),
-            outputLayer:  this.getOutputLayer(),
+            inputLayer: this.getInputLayer().saveLayerToSchema(),
+            hiddenLayers: this.getHiddenLayers().map(layer => layer.saveLayerToSchema()),
+            outputLayer:  this.getOutputLayer().saveLayerToSchema(),
             epochsTrained: this.epochsTrained,
             trainingCases: this.trainingCases,
         };

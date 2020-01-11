@@ -13,16 +13,17 @@ export function getMeanNetworkError(net: Network, testData: testData[]) {
 }
 
 export function showTrainingResults(network: Network): void {
+    console.log(`After ${network.getEpochsTrained()} epochs:`);
     network.getTrainingCases().forEach(dataset => {
         network.run(dataset.inputs);
-        console.log(`After ${network.getEpochsTrained()} epochs for ${dataset.inputs}:`);
+        console.log(`For ${dataset.inputs}:`);
         let outputStringFormatted: string;
         if (Math.abs(dataset.expected[0] - network.getOutputLayerValues()[0]) < 0.1) {
             outputStringFormatted = chalk.bold.greenBright(network.getOutputLayerValues());
         } else {
             outputStringFormatted = chalk.bold.redBright(network.getOutputLayerValues());
         }
-        console.log(chalk.bgAnsi256(235)(`Expected ${chalk.bold(dataset.expected)} : got ${outputStringFormatted}`));
+        console.log(chalk.bgAnsi256(235)(`  Expected ${chalk.bold(dataset.expected)} : got ${outputStringFormatted}`));
     });
 }
 
