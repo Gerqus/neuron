@@ -1,24 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Layer_class_1 = require("./Layer.class");
-const utils_1 = require("../utils");
 const errorFunctions_1 = require("../libs/errorFunctions");
-const lab_1 = require("../lab");
+const lab_1 = require("../libs/lab");
 const activationFunctions_1 = require("../libs/activationFunctions");
 const _ = require("lodash");
 class Network {
-    constructor(schema, linkingFunction) {
+    constructor(schema) {
         this.layers = [];
         this.epochsTrained = 0;
         this.indexedNeurons = {};
-        if (!schema.inputLayer || !schema.outputLayer) {
-            throw new Error('Network must have input and output layers. Terminating...');
-        }
-        if (!schema.inputLayer.neurons.length ||
-            !schema.outputLayer.neurons.length ||
-            _.some(schema.hiddenLayers, (layer) => layer.neurons.length === 0)) {
-            throw new Error('All declared layers must have neurons. Terminating...');
-        }
+        this.checkSchema(schema);
         const neuronsSchemas = [];
         this.addLayer(new Layer_class_1.Layer(schema.inputLayer));
         neuronsSchemas.push(...schema.inputLayer.neurons);
@@ -33,31 +25,36 @@ class Network {
         this.epochsTrained = schema.epochsTrained ? schema.epochsTrained : 0;
         this.trainingCases = schema.trainingCases ? schema.trainingCases : [];
         const createdNeurons = this.layers.reduce((neurons, layer) => neurons.concat(layer.getNeurons()), []);
-        this.interlinkNeurons(createdNeurons, neuronsSchemas, linkingFunction);
+        this.interlinkNeurons(createdNeurons, neuronsSchemas);
     }
-    interlinkNeurons(neurons, neuronsSchemas, linkingFunction) {
-        if (linkingFunction) {
-            linkingFunction(this.getLayers());
+    checkSchema(schema) {
+        if (!schema.inputLayer || !schema.outputLayer) {
+            throw new Error('Network must have input and output layers. Terminating...');
         }
-        else {
-            neurons.forEach((neuron) => {
-                const neuronName = neuron.getName();
-                if (!neuronName) {
-                    return;
-                }
-                if (neuronName in this.indexedNeurons) {
-                    throw new Error(`Duplicated neuron name "${neuronName}". Terminating...`);
-                }
-                this.indexedNeurons[neuronName] = neuron;
-            });
-            neuronsSchemas.forEach((neuronSchema) => {
-                if (neuronSchema.incomingConnectionsSchemas) {
-                    neuronSchema.incomingConnectionsSchemas.forEach((incomingConnection) => {
-                        this.indexedNeurons[neuronSchema.name].connect(this.indexedNeurons[incomingConnection.inputNeuronName], incomingConnection.weight);
-                    });
-                }
-            });
+        if (!schema.inputLayer.neurons.length ||
+            !schema.outputLayer.neurons.length ||
+            _.some(schema.hiddenLayers, (layer) => layer.neurons.length === 0)) {
+            throw new Error('All declared layers must have neurons. Terminating...');
         }
+    }
+    interlinkNeurons(neurons, neuronsSchemas) {
+        neurons.forEach((neuron) => {
+            const neuronName = neuron.getName();
+            if (!neuronName) {
+                return;
+            }
+            if (neuronName in this.indexedNeurons) {
+                throw new Error(`Duplicated neuron name "${neuronName}". Terminating...`);
+            }
+            this.indexedNeurons[neuronName] = neuron;
+        });
+        neuronsSchemas.forEach((neuronSchema) => {
+            if (neuronSchema.incomingConnectionsSchemas) {
+                neuronSchema.incomingConnectionsSchemas.forEach((incomingConnection) => {
+                    this.indexedNeurons[neuronSchema.name].connect(this.indexedNeurons[incomingConnection.inputNeuronName], incomingConnection.weight);
+                });
+            }
+        });
     }
     setTrainingCases(trainingCases) {
         let errorFound = false;
@@ -153,7 +150,7 @@ class Network {
             };
             layer.getNeurons().forEach((neuron, neuronIndex) => {
                 const connectionsWeights = neuron.getConnections().map((conn) => ({
-                    weight: utils_1.roundWithPrecision(conn.weight, 6),
+                    weight: _.round(conn.weight, 6),
                     state: conn.inputNeuron.getState(),
                 }));
                 const neuronLog = {
@@ -190,7 +187,7 @@ class Network {
         this.layers.push(layer);
     }
     drawTestDataToWork() {
-        this.chosenTrainingSet = utils_1.getRandomElement(this.trainingCases);
+        this.chosenTrainingSet = _.sample(this.trainingCases);
     }
     setTestDataToWork(testSetIndex) {
         this.chosenTrainingSet = this.trainingCases[testSetIndex];

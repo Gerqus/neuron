@@ -1,85 +1,69 @@
-import { Network } from './classes/Network.class';
-import * as chalk from 'chalk';
-import * as _ from 'lodash';
-import process = require('process');
-import { roundWithPrecision } from './utils';
-
-export function getMeanNetworkError(net: Network, testData: testData[]) {
-    return testData.reduce(
-        (errorsSum, testCase) =>
-            errorsSum + net.getError(testCase),
-        0
-    ) / testData.length;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const chalk = require("chalk");
+const _ = require("lodash");
+const process = require("process");
+function getMeanNetworkError(net, testData) {
+    return testData.reduce((errorsSum, testCase) => errorsSum + net.getError(testCase), 0) / testData.length;
 }
-
-export function showTrainingResults(network: Network): void {
+exports.getMeanNetworkError = getMeanNetworkError;
+function showTrainingResults(network) {
     console.log(`After ${network.getEpochsTrained()} epochs:`);
     network.getTrainingCases().forEach(dataset => {
         network.run(dataset.inputs);
         console.log(`For ${dataset.inputs}:`);
-        let outputStringFormatted: string;
+        let outputStringFormatted;
         if (Math.abs(dataset.expected[0] - network.getOutputLayerValues()[0]) < 0.1) {
             outputStringFormatted = chalk.bold.greenBright(network.getOutputLayerValues());
-        } else {
+        }
+        else {
             outputStringFormatted = chalk.bold.redBright(network.getOutputLayerValues());
         }
         console.log(chalk.bgAnsi256(235)(`  Expected ${chalk.bold(dataset.expected)} : got ${outputStringFormatted}`));
     });
 }
-
-type Color = [number, number, number];
-
+exports.showTrainingResults = showTrainingResults;
 class Serie {
-    public label: string;
-    public color: Color = [255, 255, 255];
-    public points: number[] = [];
-    public offset = 0;
-    public width = 0;
-    public maxValue: number;
-    public minValue: number;
-    private plotter: Plotter;
-
-    constructor(plotterParent: Plotter, label?: string, color?: Color) {
+    constructor(plotterParent, label, color) {
+        this.color = [255, 255, 255];
+        this.points = [];
+        this.offset = 0;
+        this.width = 0;
         this.label = label ? label : '';
         this.color = color ? color : this.color;
         this.plotter = plotterParent;
     }
-
-    public setWidth(width: number) {
+    setWidth(width) {
         this.width = width;
     }
-
-    public setOffset(offset: number) {
+    setOffset(offset) {
         this.offset = offset;
     }
-
-    public changeColor(newColor: Color): void {
+    changeColor(newColor) {
         this.color = newColor;
     }
-
-    public addPoint(value: number): void {
+    addPoint(value) {
         this.points.push(value);
         this.maxValue = (value > this.maxValue || this.maxValue === undefined) && value.toString() !== 'NaN' ? value : this.maxValue;
         this.minValue = (value < this.minValue || this.minValue === undefined) && value.toString() !== 'NaN' ? value : this.minValue;
         this.plotter.pointAdded(this.length);
     }
-
-    get length(): number {
+    get length() {
         return this.points.length;
     }
 }
-
-export function darkenColorRGB(color: Color, timesDarker: number): Color {
-    return color.map(colorChannel => Math.round(colorChannel / timesDarker)) as Color;
+function darkenColorRGB(color, timesDarker) {
+    return color.map(colorChannel => Math.round(colorChannel / timesDarker));
 }
-
-export class Plotter {
-    private series: Serie[] = [];
-    private plotLength = 0;
-    private consoleColumns = process.stdout.columns;
-    private liveMode = true;
-
-    private plotPoint(serie: Serie, lineIndex: number) {
+exports.darkenColorRGB = darkenColorRGB;
+class Plotter {
+    constructor() {
+        this.series = [];
+        this.plotLength = 0;
+        this.consoleColumns = process.stdout.columns;
+        this.liveMode = true;
+    }
+    plotPoint(serie, lineIndex) {
         const darkerColor = darkenColorRGB(serie.color, 4);
         const value = serie.points[lineIndex];
         const previousValue = serie.points[lineIndex - 1];
@@ -89,15 +73,17 @@ export class Plotter {
             process.stdout.write('\u2219'.padStart(8, ' '));
             return;
         }
-        const valueLabel = roundWithPrecision(value, 3).toString().padEnd(7, ' ');
-        let formattedLabel: string;
+        const valueLabel = _.round(value, 3).toString().padEnd(7, ' ');
+        let formattedLabel;
         if (value === serie.minValue) {
             formattedLabel = chalk.rgb(...serie.color)('\u25bc'.concat(valueLabel));
             process.stdout.moveCursor(-1, 0);
-        } else if (value === serie.maxValue) {
+        }
+        else if (value === serie.maxValue) {
             formattedLabel = chalk.rgb(...serie.color)('\u25b2'.concat(valueLabel));
             process.stdout.moveCursor(-1, 0);
-        } else {
+        }
+        else {
             formattedLabel = valueLabel;
         }
         process.stdout.write(formattedLabel.concat('\u2219'));
@@ -110,32 +96,31 @@ export class Plotter {
             process.stdout.write(chalk.rgb(...serie.color)(`\u250C${'\u2500'.repeat(difference)}`));
             process.stdout.moveCursor(-1, 0);
             process.stdout.write(chalk.rgb(...serie.color)('\u2518'));
-        } else if (difference < 0) {
+        }
+        else if (difference < 0) {
             process.stdout.write(chalk.rgb(...darkerColor)(`${'\u2219'.repeat(normPreviousValue)}`));
             process.stdout.moveCursor(-1, 0);
             process.stdout.write(chalk.rgb(...serie.color)(`\u2514${'\u2500'.repeat(-1 * difference)}`));
             process.stdout.moveCursor(-1, 0);
             process.stdout.write(chalk.rgb(...serie.color)('\u2510'));
-        } else {
+        }
+        else {
             process.stdout.write(chalk.rgb(...darkerColor)(`${'\u2219'.repeat(normValue)}`));
             process.stdout.moveCursor(-1, 0);
             process.stdout.write(chalk.rgb(...serie.color)(`\u2502`));
         }
     }
-
-    private plotLine(linePointsIndex: number): void {
+    plotLine(linePointsIndex) {
         _.orderBy(this.series, (serie) => serie.points[linePointsIndex], 'desc');
         this.series.forEach(serie => {
             this.plotPoint(serie, linePointsIndex);
         });
         process.stdout.write('\n');
     }
-
-    private scaleToFit(value: number, serie: Serie) {
+    scaleToFit(value, serie) {
         return Math.floor(value * ((serie.width - 10) / (serie.maxValue - serie.minValue)));
     }
-
-    private levelOutPlots(fillLastLine = false): void {
+    levelOutPlots(fillLastLine = false) {
         const mod = fillLastLine ? 0 : 1;
         this.series.forEach(serie => {
             while ((serie.length + mod) < this.plotLength) {
@@ -143,16 +128,14 @@ export class Plotter {
             }
         });
     }
-
-    private drawLabelsAndStatsLine(): void {
+    drawLabelsAndStatsLine() {
         this.series.forEach(serie => {
             process.stdout.cursorTo(serie.offset);
-            process.stdout.write(chalk.rgb(...serie.color)(`${serie.label} <${roundWithPrecision(serie.minValue, 3)};${roundWithPrecision(serie.maxValue, 3)}>`));
+            process.stdout.write(chalk.rgb(...serie.color)(`${serie.label} <${_.round(serie.minValue, 3)};${_.round(serie.maxValue, 3)}>`));
         });
         process.stdout.write('\n');
     }
-
-    public addSerie(color?: Color, label?: string, ): Serie {
+    addSerie(color, label) {
         const newSerie = new Serie(this, label, color);
         this.series.push(newSerie);
         const seriesWidth = Math.floor(this.consoleColumns / this.series.length);
@@ -160,45 +143,40 @@ export class Plotter {
             serie.setOffset(seriesWidth * index);
             serie.setWidth(seriesWidth);
         });
-
         while (newSerie.length < this.plotLength) {
             newSerie.addPoint(undefined);
         }
-
         return newSerie;
     }
-
-    public pointAdded(serieLength: number) {
+    pointAdded(serieLength) {
         this.plotLength = this.plotLength >= serieLength ? this.plotLength : serieLength;
         if (this.liveMode && this.plotLength === serieLength) {
             this.levelOutPlots();
         }
-        // this.plotLength = this.plotLength >= serieLength ? this.plotLength : serieLength;
     }
-
-    public draw() {
+    draw() {
         this.drawLabelsAndStatsLine();
         for (let i = 0; i < this.plotLength; ++i) {
             this.plotLine(i);
         }
         this.drawLabelsAndStatsLine();
     }
-
-    public toggleLiveMode(): void {
+    toggleLiveMode() {
         if (this.liveMode) {
             this.liveModeOff();
-        } else {
+        }
+        else {
             this.liveModeOn();
         }
     }
-
-    public liveModeOn(): void {
+    liveModeOn() {
         this.liveMode = true;
         this.levelOutPlots(true);
     }
-
-    public liveModeOff(): void {
+    liveModeOff() {
         this.liveMode = false;
         this.levelOutPlots(true);
     }
 }
+exports.Plotter = Plotter;
+//# sourceMappingURL=lab.js.map

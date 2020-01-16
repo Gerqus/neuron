@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const xor_1 = require("./networks/xor");
-const lab_1 = require("./lab");
+const lab_1 = require("./libs/lab");
 const Network_class_1 = require("./classes/Network.class");
 const epochs = 300;
 const times = 100;

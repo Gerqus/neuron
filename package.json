@@ -2,7 +2,7 @@
   "name": "neuron",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/classes/Network.class.js",
+  "main": "src/main",
   "dependencies": {
     "@types/lodash": "^4.14.149",
     "@types/node": "^13.1.2",
