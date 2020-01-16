@@ -13,8 +13,11 @@ const MSE: ErrorFunctionSchema = function(expected, predicted): number {
 MSE.derivative = function(expected, predicted): number {
     return expected - predicted;
 };
-MSE.toString = () => 'MSE';
+MSE.toString = () => ErrorFunctionsNames.MSE;
 
+export enum ErrorFunctionsNames {
+    MSE = 'MSE',
+}
 
 export const ErrorFunctions = {
     MSE,

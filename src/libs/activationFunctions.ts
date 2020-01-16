@@ -24,7 +24,7 @@ const bipolarSigmoid: ActivationFunctionSchema = function(x: number): number {
     return (1 - Math.exp(-x)) / (1 + Math.exp(-x));
 };
 bipolarSigmoid.derivative = (x: number) => {
-    return 2 * Math.exp(x) / ((Math.exp(x) + 1) ** 2);
+    return 2 * Math.exp(x) / (Math.exp(x) + 1) ** 2;
 };
 bipolarSigmoid.toString = () => ActivationFunctionsNames.bipolarSigmoid;
 
