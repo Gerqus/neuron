@@ -1,20 +1,19 @@
-import { NetworkSchema } from '../classes/Network.class';
-import { ActivationFunctionsNames } from '../libs/activationFunctions';
-import { NeuronsLib } from '../libs/neurons';
-import { testData } from '../interfaces/test-data.interface'
-
-const networkSchema: NetworkSchema = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const activationFunctions_1 = require("../libs/activationFunctions");
+const neurons_1 = require("../libs/neurons");
+const networkSchema = {
     inputLayer: {
         neurons: [
-            NeuronsLib.InputNeuron('a'),
-            NeuronsLib.InputNeuron('b'),
+            neurons_1.NeuronsLib.InputNeuron('a'),
+            neurons_1.NeuronsLib.InputNeuron('b'),
         ],
     },
     hiddenLayers: [
         {
             neurons: [
                 {
-                    activationFunctionName: ActivationFunctionsNames.bipolarSigmoid,
+                    activationFunctionName: activationFunctions_1.ActivationFunctionsNames.bipolarSigmoid,
                     name: 'h1',
                     incomingConnectionsSchemas: [
                         { inputNeuronName: 'a' },
@@ -23,7 +22,7 @@ const networkSchema: NetworkSchema = {
                     learningFactor: 1,
                 },
                 {
-                    activationFunctionName: ActivationFunctionsNames.ReLU,
+                    activationFunctionName: activationFunctions_1.ActivationFunctionsNames.ReLU,
                     name: 'h2',
                     incomingConnectionsSchemas: [
                         { inputNeuronName: 'a' },
@@ -37,7 +36,7 @@ const networkSchema: NetworkSchema = {
     outputLayer: {
         neurons: [
             {
-                activationFunctionName: ActivationFunctionsNames.sigmoid,
+                activationFunctionName: activationFunctions_1.ActivationFunctionsNames.sigmoid,
                 name: 'output',
                 incomingConnectionsSchemas: [
                     { inputNeuronName: 'h1' },
@@ -48,8 +47,7 @@ const networkSchema: NetworkSchema = {
         ],
     },
 };
-
-const trainDataset: testData[] = [
+const trainDataset = [
     {
         inputs: [1, 0],
         expected: [1],
@@ -67,6 +65,6 @@ const trainDataset: testData[] = [
         expected: [0],
     },
 ];
-
-export const XORNetworkSchema = networkSchema;
-export const XORTrainDataset = trainDataset;
+exports.XORNetworkSchema = networkSchema;
+exports.XORTrainDataset = trainDataset;
+//# sourceMappingURL=xor.js.map

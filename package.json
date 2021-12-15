@@ -1,8 +1,8 @@
 {
   "name": "neuron",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
-  "main": "src/main",
+  "main": "dist/index.js",
   "dependencies": {
     "@types/lodash": "^4.14.149",
     "@types/node": "^13.1.2",
@@ -14,7 +14,7 @@
   "scripts": {
     "build_watch": "tsc --watch",
     "build": "tsc",
-    "start": "nodemon ./dist/main.js",
+    "start": "nodemon ./dist/index.js",
     "lint-fix": "tslint --fix --project ."
   },
   "repository": {
