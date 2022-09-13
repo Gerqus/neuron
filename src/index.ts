@@ -6,3 +6,5 @@ export { ActivationFunctionsNames } from './libs/activationFunctions';
 export { ErrorFunctionsNames } from './libs/errorFunctions';
 export { dataset } from './interfaces/dataset.interface';
 export { testData } from './interfaces/test-data.interface';
+
+import * as _ from './xor';

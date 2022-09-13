@@ -169,7 +169,7 @@ export class Plotter {
     }
 
     public pointAdded(serieLength: number) {
-        this.plotLength = this.plotLength >= serieLength ? this.plotLength : serieLength;
+        this.plotLength = Math.max(this.plotLength, serieLength);
         if (this.liveMode && this.plotLength === serieLength) {
             this.levelOutPlots();
         }
