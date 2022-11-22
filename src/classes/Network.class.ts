@@ -102,8 +102,8 @@ export class Network {
     });
     neuronConnectionsSchemas.push(...schema.outputLayer.neurons);
     
-    this.epochsTrained = schema.epochsTrained ? schema.epochsTrained : 0;
-    this.trainingCases = schema.trainingCases ? schema.trainingCases : [];
+    this.epochsTrained = schema.epochsTrained ?? 0;
+    this.trainingCases = schema.trainingCases ?? [];
     
     this.interlinkNeurons(neuronConnectionsSchemas);
   }

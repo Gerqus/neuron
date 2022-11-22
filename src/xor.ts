@@ -3,7 +3,7 @@ import { Network, NetworkSchema } from './classes/Network.class';
 import { TestData } from './interfaces/test-data.interface';
 import { showTrainingResults } from './libs/lab';
 
-const data: TestData[] = [
+export const XORTrainingData: TestData[] = [
   {
       inputs: [1, 0],
       expected: [1],
@@ -42,14 +42,14 @@ export const XORNetworkSchema: NetworkSchema = {
       { activationFunctionName: ActivationFunctionsNames.sigmoid, bias: 0, learningFactor: 0.75, name: 'OUT #0' },
     ],
   },
-  trainingCases: data,
+  trainingCases: XORTrainingData,
 };
 
 const xorNetwork = new Network(XORNetworkSchema);
 
-xorNetwork.train(1000000, (trainedNetwork) => data.every(set => trainedNetwork.getError(set) < 0.0001));
+xorNetwork.train(1000000, (trainedNetwork) => XORTrainingData.every(set => trainedNetwork.getError(set) < 0.0001));
 
-xorNetwork.getNetworkStatus(data[0])
+xorNetwork.getNetworkStatus(XORTrainingData[0])
   .layers
   .map(
     layer =>
