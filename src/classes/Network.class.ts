@@ -53,7 +53,7 @@ export interface NetworkSchema {
 
 export class Network {
   private layers: Layer[] = [];
-  private chosenTrainingSet?: TestData;
+  private learnIterationTrainingSet?: TestData;
   private trainingCases: TestData[];
   private epochsTrained = 0;
   
@@ -194,12 +194,12 @@ export class Network {
   }
   
   public train(epochsLimit: number, successConditionFunction?: (net: Network) => boolean): number {
-    if (!this.chosenTrainingSet) {
-      throw new Error('No trainging dataset choosen. Cannot train without training dataset');
-    }
     for (let i = 0; i < epochsLimit; ++i) {
       this.setRandomTestDataToRun();
-      this.run(this.chosenTrainingSet.inputs);
+      if (!this.learnIterationTrainingSet) {
+        throw new Error('No trainging dataset choosen. Cannot train without training dataset');
+      }
+      this.run(this.learnIterationTrainingSet.inputs);
       this.backpropagateError();
       this.learn();
       
@@ -220,10 +220,10 @@ export class Network {
   }
   
   public backpropagateError(): void {
-    if (!this.chosenTrainingSet) {
+    if (!this.learnIterationTrainingSet) {
       throw new Error('No trainging dataset choosen. Cannot backpropagate error without expected data');
     }
-    const chosenTrainingSet = this.chosenTrainingSet; // typescript bug forces this
+    const chosenTrainingSet = this.learnIterationTrainingSet; // typescript bug forces this
     
     this.layers.forEach(layer => {
       layer.getNeurons().forEach(neuron => {
@@ -338,11 +338,11 @@ export class Network {
   }
   
   private setRandomTestDataToRun(): void {
-    this.chosenTrainingSet = _.sample(this.trainingCases);
+    this.learnIterationTrainingSet = _.sample(this.trainingCases);
   }
   
   public setTestDataToWork(testSetIndex: number): void {
-    this.chosenTrainingSet = this.trainingCases[testSetIndex];
+    this.learnIterationTrainingSet = this.trainingCases[testSetIndex];
   }
   
   private getInputLayer(): Layer {
