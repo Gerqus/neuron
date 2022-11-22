@@ -1,7 +1,7 @@
 import { NetworkSchema } from '../classes/Network.class';
 import { ActivationFunctionsNames } from '../libs/activationFunctions';
 import { NeuronsLib } from '../libs/neurons';
-import { testData } from '../interfaces/test-data.interface'
+import { TestData } from '../interfaces/test-data.interface';
 
 const networkSchema: NetworkSchema = {
     inputLayer: {
@@ -13,12 +13,13 @@ const networkSchema: NetworkSchema = {
             neurons: [
             {
                 activationFunctionName: ActivationFunctionsNames.sigmoid,
+                name: Symbol(),
             },
         ],
     },
 };
 
-const trainDataset: testData[] = [
+const trainDataset: TestData[] = [
     {
         inputs: [0.5],
         expected: [0.25],

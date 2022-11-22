@@ -1,11 +1,11 @@
 import { Neuron } from './Neuron.class';
 
 export interface ConnectionSchema {
-    inputNeuronName: string;
-    weight?: number;
+  inputNeuronName: Neuron['name'];
+  weight?: number;
 }
 
 export interface Connection {
-    inputNeuron: Neuron;
-    weight: number;
+  inputNeuron: Neuron;
+  weight: number;
 }

@@ -1,6 +1,6 @@
-import { dataset } from "./dataset.interface";
+import { dataset } from './dataset.interface';
 
-export interface testData {
-    inputs: dataset,
-    expected: dataset
+export interface TestData {
+  inputs: dataset;
+  expected: dataset;
 }

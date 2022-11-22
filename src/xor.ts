@@ -1,25 +1,25 @@
 import { ActivationFunctionsNames} from './libs/activationFunctions';
 import { Network, NetworkSchema } from './classes/Network.class';
-import { testData } from './interfaces/test-data.interface';
-import { Plotter, showTrainingResults } from './libs/lab';
+import { TestData } from './interfaces/test-data.interface';
+import { showTrainingResults } from './libs/lab';
 
 
-const data: testData[] = [
+const data: TestData[] = [
   {
       inputs: [1, 0],
-      expected: [1]
+      expected: [1],
   },
   {
       inputs: [0, 1],
-      expected: [1]
+      expected: [1],
   },
   {
       inputs: [1, 1],
-      expected: [0]
+      expected: [0],
   },
   {
       inputs: [0, 0],
-      expected: [0]
+      expected: [0],
   },
 ];
 
@@ -48,9 +48,28 @@ const networkSchema: NetworkSchema = {
 
 const network = new Network(networkSchema);
 
-network.train(1000000, (network) => data.every(set => network.getError(set) < 0.0001));
+network.train(1000000, (trainedNetwork) => data.every(set => trainedNetwork.getError(set) < 0.0001));
 
-network.getNetworkStatus(data[0]).layers.map(layer => Object.assign(layer, {neurons: layer.neurons.map(neuron => Object.assign(neuron, {incomingConnections: JSON.stringify(neuron.incomingConnections)}))})).forEach(layer => console.log(layer));
+network.getNetworkStatus(data[0])
+  .layers
+  .map(
+    layer =>
+      Object.assign(
+        layer,
+        {
+          neurons: layer.neurons.map(
+            neuron =>
+              Object.assign(
+                neuron,
+                {
+                  incomingConnections: JSON.stringify(neuron.incomingConnections),
+                }
+              )
+          ),
+        }
+      )
+  )
+  .forEach(layer => console.log(layer));
 
 showTrainingResults(network);
 
