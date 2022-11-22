@@ -7,4 +7,4 @@ export * from './libs/errorFunctions';
 export * from './libs/lab';
 export * from './interfaces/dataset.interface';
 export * from './interfaces/test-data.interface';
-export * from './xor';
+export * from './network-templates/index';
