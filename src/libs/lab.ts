@@ -1,6 +1,6 @@
 import { Network } from '../classes/Network.class';
-import * as chalk from 'chalk';
-import * as _ from 'lodash';
+import chalk from 'chalk';
+import _ from 'lodash';
 import process = require('process');
 import { TestData } from '../interfaces/test-data.interface';
 
