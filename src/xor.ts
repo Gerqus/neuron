@@ -3,7 +3,6 @@ import { Network, NetworkSchema } from './classes/Network.class';
 import { TestData } from './interfaces/test-data.interface';
 import { showTrainingResults } from './libs/lab';
 
-
 const data: TestData[] = [
   {
       inputs: [1, 0],
@@ -23,7 +22,7 @@ const data: TestData[] = [
   },
 ];
 
-const networkSchema: NetworkSchema = {
+export const XORNetworkSchema: NetworkSchema = {
   inputLayer: {
     neurons: [
       { activationFunctionName: ActivationFunctionsNames.bypass, bias: 0, name: 'INP #0' },
@@ -46,11 +45,11 @@ const networkSchema: NetworkSchema = {
   trainingCases: data,
 };
 
-const network = new Network(networkSchema);
+const xorNetwork = new Network(XORNetworkSchema);
 
-network.train(1000000, (trainedNetwork) => data.every(set => trainedNetwork.getError(set) < 0.0001));
+xorNetwork.train(1000000, (trainedNetwork) => data.every(set => trainedNetwork.getError(set) < 0.0001));
 
-network.getNetworkStatus(data[0])
+xorNetwork.getNetworkStatus(data[0])
   .layers
   .map(
     layer =>
@@ -71,7 +70,7 @@ network.getNetworkStatus(data[0])
   )
   .forEach(layer => console.log(layer));
 
-showTrainingResults(network);
+showTrainingResults(xorNetwork);
 
 // const plotter = new Plotter();
 // plotter.addSerie(

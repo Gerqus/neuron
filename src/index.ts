@@ -7,4 +7,4 @@ export { ErrorFunctionsNames } from './libs/errorFunctions';
 export { dataset } from './interfaces/dataset.interface';
 export { TestData as testData } from './interfaces/test-data.interface';
 
-import * as _ from './xor';
+export * from './xor';
