@@ -1,18 +1,30 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "lib": [
-            "es2017",
-            "dom"
-        ],
-        "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "sourceMap": true,
-        "target": "ES6",
-        "sourceRoot": "./src",
-        "outDir": "./dist",
-        "declaration": true,
-        "forceConsistentCasingInFileNames": true
-    }
+  "compilerOptions": {
+    "lib": ["es2021"],
+    "module": "CommonJS",
+    "target": "es2021",
+    "outDir": "./dist",
+    "rootDir": "./src",
+
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "./dist/types",
+
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "allowUnreachableCode": false,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+  },
+  "exclude": ["./jest.config.ts", "./tests"],
+  "include": ["./src"]
 }
