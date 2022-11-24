@@ -3,6 +3,7 @@
   "version": "2.0.12",
   "description": "",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "@types/lodash": "^4.14.149",
     "@types/node": "^13.1.2",
@@ -19,16 +20,15 @@
     "build_watch": "tsc --watch",
     "build": "tsc",
     "start": "nodemon ./dist/index.js",
-    "lint-fix": "tslint --fix --project ."
+    "lint-fix": "tslint --fix --project .",
+    "path": "npm version --no-git-tag-version patch",
+    "minor": "npm version --no-git-tag-version minor",
+    "major": "npm version --no-git-tag-version major"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Gerqus/neuron.git"
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Gerqus/neuron/issues"
-  },
-  "homepage": "https://github.com/Gerqus/neuron#readme"
+  "author": "gerqus",
+  "license": "UNLICENCED"
 }
